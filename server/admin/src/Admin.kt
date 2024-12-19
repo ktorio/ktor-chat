@@ -1,13 +1,12 @@
-package io.ktor.chat.server
+package io.ktor.chat
 
-import io.ktor.chat.*
+import io.ktor.di.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
 
 fun Application.adminModule() {
-    val users by inject<Repository<FullUser, Long>>()
+    val users: Repository<FullUser, Long> by dependencies
 
     routing {
         authenticate {

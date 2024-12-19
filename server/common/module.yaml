@@ -4,9 +4,7 @@ product:
 
 dependencies:
     - ../../core
-    - ../../db
-    - $libs.koin.ktor
-    - $libs.koin.logger.slf4j
+    - ../db
     - $libs.ktor.server.core
     - $libs.ktor.server.cio
     - $libs.ktor.server.auth

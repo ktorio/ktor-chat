@@ -6,8 +6,6 @@ dependencies:
     - ../../db
     - ../common
     - ../rest
-    - $libs.koin.ktor
-    - $libs.koin.logger.slf4j
     - $libs.ktor.server.core
     - $libs.ktor.server.cio
     - $libs.ktor.server.auth
