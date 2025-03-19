@@ -13,10 +13,10 @@ fun DependencyResolver.named(key: String) =
     DependencyResolverContext(this, key)
 
 inline operator fun <reified T> DependencyResolver.getValue(thisRef: Any?, property: KProperty<*>): T =
-    resolve()
+    lazy<T> { resolve() }.getValue(thisRef, property)
 
 inline operator fun <reified T> DependencyResolverContext.getValue(thisRef: Any?, property: KProperty<*>): T =
-    resolver.resolve(key)
+    lazy<T> { resolver.resolve(key) }.getValue(thisRef, property)
 
 data class DependencyResolverContext(
     val resolver: DependencyResolver,

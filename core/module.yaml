@@ -14,3 +14,7 @@ test-dependencies:
 settings:
     kotlin:
         serialization: json
+
+repositories:
+    - mavenLocal
+    - mavenCentral

@@ -3,8 +3,8 @@ product:
 
 dependencies:
     - ../../core
+    - ../../db
     - ../common
-    - ../db
     - $libs.ktor.server.core
     - $libs.ktor.server.cio
     - $libs.ktor.server.auth

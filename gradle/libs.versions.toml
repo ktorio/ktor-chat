@@ -1,5 +1,6 @@
 [versions]
-ktor-version = "3.1.2"
+ktor-version = "3.2.0-SNAPSHOT"
+ktor-plugin-version = "3.1.1"
 kotlin-version = "2.1.20"
 logback-version = "1.5.17"
 kotlinx-datetime-version = "0.6.2"
@@ -47,4 +48,4 @@ ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref 
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-version" }
 
 [plugins]
-ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor-plugin-version" }
