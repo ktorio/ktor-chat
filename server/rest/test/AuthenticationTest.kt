@@ -11,7 +11,6 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import io.ktor.server.testing.testApplication
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ktor.plugin.koin
 import kotlin.test.Test
@@ -104,7 +103,7 @@ class AuthenticationTest {
 private fun Application.mockUsersRepository() {
     koin {
         modules(module {
-            single<Repository<FullUser, Long>>(named("users")) {
+            single<Repository<FullUser, Long>>() {
                 ListRepository.create()
             }
         })

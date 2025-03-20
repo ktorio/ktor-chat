@@ -27,7 +27,7 @@ const val CONFIRMATION_MAIL_TEMPLATE = """
 """
 
 fun Application.auth() {
-    val users by inject<Repository<FullUser, Long>>(named("users"))
+    val users by inject<Repository<FullUser, Long>>()
     val hashAlgorithm by inject<Algorithm>(named("hash"))
     val mailer by inject<Mailer>()
     val audience = environment.config.property("jwt.audience").getString()

@@ -5,12 +5,11 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.server.testing.testApplication
 import io.ktor.server.application.*
+import io.ktor.server.testing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ktor.plugin.koin
 import kotlin.test.Test
@@ -35,7 +34,10 @@ class MessagesTest {
             created = Clock.System.now(),
             text = "Hello, World!",
         )
-        val expectedMessage = newMessage.copy(id = 1)
+        val expectedMessage = newMessage.copy(
+            id = 1,
+            author = SimplifiedUser(mockUser.id, mockUser.name)
+        )
 
         client.configureForEvents().apply {
             launch(Dispatchers.IO) {
@@ -83,7 +85,7 @@ class MessagesTest {
 private fun Application.mockMessagesRepository() {
     koin {
         modules(module {
-            single<ObservableRepository<Message, Long>>(named("messages")) {
+            single<ObservableRepository<Message, Long>> {
                 ListRepository.create<Message>().observable()
             }
         })
