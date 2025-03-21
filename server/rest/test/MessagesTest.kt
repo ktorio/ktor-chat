@@ -5,13 +5,15 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import org.koin.dsl.module
-import org.koin.ktor.plugin.koin
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
+import org.kodein.di.ktor.di
+import org.kodein.di.singleton
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,8 +26,17 @@ class MessagesTest {
             root()
             rest()
             mockAuth()
-            mockMessagesRepository()
+            di {
+                bind<ObservableRepository<Message, Long>>() with singleton {
+                    ListRepository.create<Message>().observable()
+                }
+            }
             messages()
+
+            val repository by closestDI().instance<Repository<FullUser, Long>>()
+            launch {
+                assertEquals(emptyList(), repository.list())
+            }
         }
 
         val newMessage = Message(
@@ -80,14 +91,4 @@ class MessagesTest {
         }
     }
 
-}
-
-private fun Application.mockMessagesRepository() {
-    koin {
-        modules(module {
-            single<ObservableRepository<Message, Long>> {
-                ListRepository.create<Message>().observable()
-            }
-        })
-    }
 }

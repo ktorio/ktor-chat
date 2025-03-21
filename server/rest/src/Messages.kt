@@ -4,10 +4,11 @@ import io.ktor.chat.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 fun Application.messages() {
-    val messages by inject<ObservableRepository<Message, Long>>()
+    val messages by closestDI().instance<ObservableRepository<Message, Long>>()
 
     routing {
         authenticate {

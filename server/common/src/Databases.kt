@@ -4,9 +4,9 @@ import io.ktor.chat.*
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.koin.dsl.module
-import org.koin.ktor.plugin.koin
 import java.nio.file.Paths
+import org.kodein.di.*
+import org.kodein.di.ktor.*
 import kotlin.io.path.exists
 
 fun Application.database() {
@@ -22,10 +22,7 @@ fun Application.database() {
             SchemaUtils.create(Users, Rooms, Messages, Members)
         }
     }
-    koin {
-        modules(module {
-            // Note: qualifier is required because generics don't work with Koin
-            single<Database> { database }
-        })
+    di {
+        bind<Database>() with instance(database)
     }
 }

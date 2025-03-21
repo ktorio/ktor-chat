@@ -8,11 +8,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
 import io.ktor.server.testing.*
-import io.ktor.server.testing.testApplication
-import org.koin.dsl.module
-import org.koin.ktor.plugin.koin
+import org.kodein.di.bind
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -91,21 +90,13 @@ class AuthenticationTest {
                 security()
                 mail()
                 rest()
-                mockUsersRepository()
+                di {
+                    bind<Repository<FullUser, Long>>() with instance(ListRepository.create())
+                }
                 auth()
                 users()
             }
             this.block()
         }
 
-}
-
-private fun Application.mockUsersRepository() {
-    koin {
-        modules(module {
-            single<Repository<FullUser, Long>>() {
-                ListRepository.create()
-            }
-        })
-    }
 }

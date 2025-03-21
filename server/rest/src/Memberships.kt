@@ -6,10 +6,11 @@ import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 fun Application.members() {
-    val memberships by inject<ObservableRepository<Membership, Long>>()
+    val memberships by closestDI().instance<ObservableRepository<Membership, Long>>()
 
     routing {
         authenticate {

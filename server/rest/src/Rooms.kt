@@ -4,10 +4,11 @@ import io.ktor.chat.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 fun Application.rooms() {
-    val rooms by inject<Repository<Room, Long>>()
+    val rooms by closestDI().instance<Repository<Room, Long>>()
 
     routing {
         authenticate {

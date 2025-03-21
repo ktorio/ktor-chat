@@ -5,10 +5,11 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 fun Application.users() {
-    val users by inject<Repository<FullUser, Long>>()
+    val users by closestDI().instance<Repository<FullUser, Long>>()
 
     routing {
         authenticate {

@@ -5,7 +5,7 @@ A full-stack example application using:
 - Compose Multi-platform
 - Amper
 - Exposed 
-- Koin
+- Kodein
 
 The features presented in the application include:
 - Real-time messaging
