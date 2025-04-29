@@ -14,18 +14,18 @@ fun Application.repositories() {
     koin {
         modules(module {
             // Note: qualifier is required because generics don't work with Koin
-            single<Repository<FullUser, Long>> {
+            single<Repository<FullUser, Long>>(named("users")) {
                 UserRepository(database)
             }
-            single<ObservableRepository<Message, Long>> {
+            single<ObservableRepository<Message, Long>>(named("messages")) {
                 MessageRepository(database).observable(onFailure = { e ->
                     environment.log.error("Failed to subscribe to event", e)
                 })
             }
-            single<Repository<Room, Long>> {
+            single<Repository<Room, Long>>(named("rooms")) {
                 RoomRepository(database)
             }
-            single<ObservableRepository<Membership, Long>> {
+            single<ObservableRepository<Membership, Long>>(named("memberships")) {
                 MemberRepository(database).observable(onFailure = { e ->
                     environment.log.error("Failed to subscribe to event", e)
                 })

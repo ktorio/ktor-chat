@@ -6,10 +6,11 @@ import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 
 fun Application.members() {
-    val memberships by inject<ObservableRepository<Membership, Long>>()
+    val memberships by inject<ObservableRepository<Membership, Long>>(named("memberships"))
 
     routing {
         authenticate {

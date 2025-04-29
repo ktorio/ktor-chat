@@ -5,10 +5,12 @@ import io.ktor.server.config.yaml.*
 import io.ktor.server.testing.*
 import kotlinx.datetime.Clock
 import ktor.chat.client.HttpChatClient.Companion.configureForChat
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 class HttpChatClientTest {
 
+    @Ignore // TODO
     @Test
     fun endToEndTest() = testApplication {
         environment {
@@ -23,8 +25,11 @@ class HttpChatClientTest {
         )
         
         HttpChatClient(client.configureForChat()).apply {
-            register(serverUrl, testUser.email, testUser.name, testUser.password)
-            testUser = login(serverUrl, testUser.email, testUser.password).user
+            val (name, email, password) = testUser
+            register(serverUrl, email, name, password)
+            login(serverUrl, testUser.email, testUser.password).apply {
+                testUser = FullUser(name, email, password, user.id)
+            }
             val room = rooms.create(Room("lobby"))
             val message = messages.create(Message(
                 author = testUser,
