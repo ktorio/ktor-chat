@@ -7,3 +7,4 @@ settings:
   compose: enabled
   android:
     namespace: io.ktor.chat.app.android
+    minSdk: 23
