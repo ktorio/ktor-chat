@@ -52,6 +52,11 @@ for a full-stack Kotlin application, with a nod to architectures like _Onion_, _
 There are multiple chat client implementations under `./app/*` that can be executed independently 
 with a mock environment, or with a server running.
 
+### Running on Android
+
+To run the android client you should specify the valid server url in the [ChatViewModelProvider.kt](app/common/src@android/ktor/chat/vm/ChatViewModelProvider.kt).
+Remember: The emulator has its own `localhost`. You can check your local ip using `ifconfig | grep "inet "`.
+
 Here is a list of the commands for running each program:
 
 | application | main source                       | gradle command                  |
