@@ -25,3 +25,6 @@ test-dependencies@jvm:
   - $libs.ktor.server.sse
   - $libs.ktor.server.config.yaml
   - $libs.ktor.server.content.negotiation
+
+repositories:
+  - https://maven.pkg.jetbrains.space/public/p/ktor/eap

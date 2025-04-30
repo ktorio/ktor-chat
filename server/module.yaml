@@ -2,9 +2,12 @@ product:
     type: lib
     platforms: [jvm]
 
+apply:
+    - server.module-template.yaml
+
 dependencies:
-    - ../../core
-    - ../../db
+    - ../core
+    - ../db
     - $libs.ktor.server.core
     - $libs.ktor.server.cio
     - $libs.ktor.server.auth
@@ -14,6 +17,7 @@ dependencies:
     - $libs.ktor.server.call.logging
     - $libs.ktor.server.config.yaml
     - $libs.ktor.server.content.negotiation
+    - $libs.ktor.server.di
     - $libs.kotlinx.serialization.json
     - $libs.kotlinx.datetime
     - $libs.kotlinx.coroutines

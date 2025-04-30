@@ -59,24 +59,11 @@ Remember: The emulator has its own `localhost`. You can check your local ip usin
 
 Here is a list of the commands for running each program:
 
-| application | main source                       | gradle command                  |
-|-------------|-----------------------------------|---------------------------------|
-| server-rest | `server/rest/src/Application.kt`  | `./gradlew :server:rest:run`    |
-| desktop app | `app/desktop/src/main.kt`         | `./gradlew :app:desktop:jvmRun` |
-| android app | `app/android/src/MainActivity.kt` |                                 |
-
-### With Docker
-
-If you'd like to run everything in a containerized environment:
-
-First, publish images locally using:
- - `./gradlew :server:rest:publishImageToLocalRegistry`
- - `./gradlew :server:admin:publishImageToLocalRegistry`
-
-Now, you can run docker compose:
-```bash
-docker compose up
-```
+| application | main source                       | amper command             |
+|-------------|-----------------------------------|---------------------------|
+| server-rest | `server/rest/src/Application.kt`  | `./amper run server/rest` |
+| desktop app | `app/desktop/src/main.kt`         | `./amper run app/desktop` |
+| android app | `app/android/src/MainActivity.kt` | `./amper run app/android` |
 
 ## Screenshots
 

@@ -1,6 +1,7 @@
 package io.ktor.chat
 
-import io.ktor.di.*
+import io.ktor.chat.server.restMutations
+import io.ktor.server.plugins.di.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*

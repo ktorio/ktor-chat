@@ -1,10 +1,11 @@
 package io.ktor.chat.server
 
-import io.ktor.di.*
 import io.ktor.chat.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
+import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.plugins.di.provideDelegate
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 

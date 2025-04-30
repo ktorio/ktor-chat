@@ -1,0 +1,10 @@
+modules:
+  - app/android
+  - app/common
+  - app/desktop
+  - client
+  - core
+  - db
+  - server
+  - server/admin
+  - server/rest

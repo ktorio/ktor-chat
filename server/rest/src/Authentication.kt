@@ -7,13 +7,14 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.config.property
 import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.plugins.di.provideDelegate
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import org.koin.core.qualifier.named
-import org.koin.ktor.ext.inject
 import kotlin.math.absoluteValue
 
 const val CONFIRMATION_MAIL_TEMPLATE = """
@@ -27,11 +28,11 @@ const val CONFIRMATION_MAIL_TEMPLATE = """
 """
 
 fun Application.auth() {
-    val users by inject<Repository<FullUser, Long>>(named("users"))
-    val hashAlgorithm by inject<Algorithm>(named("hash"))
-    val mailer by inject<Mailer>()
-    val audience = environment.config.property("jwt.audience").getString()
-    val issuer = environment.config.property("jwt.issuer").getString()
+    val users: Repository<FullUser, Long> by dependencies
+    val hashAlgorithm: Algorithm by dependencies
+    val mailer: Mailer by dependencies
+    val audience: String = property("jwt.audience")
+    val issuer: String = property("jwt.issuer")
 
     fun FullUser.generateCode(): String =
         hashAlgorithm.hash(email)
@@ -141,6 +142,6 @@ fun Application.auth() {
 }
 
 @Serializable
-data class ChatPrincipal(val user: User): Principal {
+data class ChatPrincipal(val user: User) {
     constructor(id: Long, name: String): this(SimplifiedUser(id, name))
 }

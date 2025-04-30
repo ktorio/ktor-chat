@@ -4,9 +4,9 @@ import io.ktor.chat.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
-import io.ktor.di.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.di.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
