@@ -30,3 +30,8 @@ test-dependencies:
     - $libs.ktor.server.test.host
     - $libs.kotlin.test.junit
     - $libs.ktor.client.content.negotiation
+
+
+settings:
+    kotlin:
+        serialization: json

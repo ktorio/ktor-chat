@@ -1,6 +1,5 @@
-package io.ktor.chat.server
+package io.ktor.chat
 
-import io.ktor.chat.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.di.*
@@ -8,7 +7,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.users() {
-    val users: Repository<User, Long> by dependencies
+    val users: Repository<FullUser, Long> by dependencies
 
     routing {
         authenticate {

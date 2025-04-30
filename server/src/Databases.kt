@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Paths
 import kotlin.io.path.exists
 
-fun Application.databaseModule() {
+fun Application.database() {
     val mode = if (Paths.get("module.yaml").exists()) "test" else "main"
     val (url, user, driver, password) = property<DatabaseConfig>("database.$mode")
     log.info("Using database: $mode")

@@ -1,16 +1,14 @@
-package io.ktor.chat.server
+package io.ktor.chat
 
-import io.ktor.chat.*
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.config.property
-import io.ktor.server.plugins.BadRequestException
-import io.ktor.server.plugins.di.dependencies
-import io.ktor.server.plugins.di.provideDelegate
+import io.ktor.server.config.*
+import io.ktor.server.plugins.*
+import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -29,7 +27,7 @@ const val CONFIRMATION_MAIL_TEMPLATE = """
 
 fun Application.auth() {
     val users: Repository<FullUser, Long> by dependencies
-    val hashAlgorithm: Algorithm by dependencies
+    val hashAlgorithm: Algorithm by dependencies.named("hash")
     val mailer: Mailer by dependencies
     val audience: String = property("jwt.audience")
     val issuer: String = property("jwt.issuer")

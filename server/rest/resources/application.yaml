@@ -2,19 +2,18 @@ ktor:
     development: true
     application:
         modules:
-            - io.ktor.chat.server.RootKt.root
-            - io.ktor.chat.server.LoggingKt.logging
-            - io.ktor.chat.server.SecurityKt.security
-            - io.ktor.chat.server.MailKt.mail
-            - io.ktor.chat.server.RestKt.rest
-            - io.ktor.chat.server.HealthCheckKt.healthCheck
-            - io.ktor.chat.server.DatabasesKt.database
-            - io.ktor.chat.server.RepositoriesKt.repositories
-            - io.ktor.chat.server.AuthenticationKt.auth
-            - io.ktor.chat.server.UsersKt.users
-            - io.ktor.chat.server.MessagesKt.messages
-            - io.ktor.chat.server.RoomsKt.rooms
-            - io.ktor.chat.server.MembershipsKt.members
+            - io.ktor.chat.LoggingKt.logging
+            - io.ktor.chat.SecurityKt.security
+            - io.ktor.chat.MailKt.mail
+            - io.ktor.chat.RestKt.rest
+            - io.ktor.chat.HealthCheckKt.healthCheck
+            - io.ktor.chat.DatabasesKt.database
+            - io.ktor.chat.RepositoriesKt.repositories
+            - io.ktor.chat.AuthenticationKt.auth
+            - io.ktor.chat.UsersKt.users
+            - io.ktor.chat.MessagesKt.messages
+            - io.ktor.chat.RoomsKt.rooms
+            - io.ktor.chat.MembershipsKt.members
     deployment:
         port: 8080
 
