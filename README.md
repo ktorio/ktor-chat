@@ -38,7 +38,6 @@ mindmap
       android
     id(server)
       rest
-      htmx
       admin
     id{{client}}
     id{{db}}
@@ -59,11 +58,11 @@ Remember: The emulator has its own `localhost`. You can check your local ip usin
 
 Here is a list of the commands for running each program:
 
-| application | main source                       | amper command             |
-|-------------|-----------------------------------|---------------------------|
-| server-rest | `server/rest/src/Application.kt`  | `./amper run server/rest` |
-| desktop app | `app/desktop/src/main.kt`         | `./amper run app/desktop` |
-| android app | `app/android/src/MainActivity.kt` | `./amper run app/android` |
+| application | main source                       | amper command                  |
+|-------------|-----------------------------------|--------------------------------|
+| server-rest | `server/rest/src/Application.kt`  | `./amper run --module rest`    |
+| desktop app | `app/desktop/src/main.kt`         | `./amper run --module desktop` |
+| android app | `app/android/src/MainActivity.kt` | `./amper run --module android` |
 
 ## Screenshots
 
