@@ -1,6 +1,5 @@
 package io.ktor.chat
 
-import io.ktor.chat.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -85,7 +84,6 @@ class AuthenticationTest {
         testApplication {
             configureYaml(yamlFile = "auth-config.yaml")
             application {
-                root()
                 security()
                 mail()
                 rest()

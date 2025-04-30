@@ -1,6 +1,5 @@
 package io.ktor.chat
 
-import io.ktor.chat.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
@@ -20,7 +19,6 @@ class MessagesTest {
     fun `CRUD endpoints happy path`() = testApplication {
         configureYaml("auth-config.yaml")
         application {
-            root()
             rest()
             mockAuth()
             mockMessagesRepository()

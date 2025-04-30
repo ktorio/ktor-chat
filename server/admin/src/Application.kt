@@ -1,6 +1,5 @@
 package io.ktor.chat
 
-import io.ktor.chat.Users
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
