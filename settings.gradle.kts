@@ -2,6 +2,7 @@ rootProject.name = "ktor-chat"
 
 pluginManagement {
     repositories {
+        maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
         mavenCentral()
         google()
         gradlePluginPortal()
@@ -12,7 +13,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.jetbrains.amper.settings.plugin").version("0.5.0-dev-2035")
+    id("org.jetbrains.amper.settings.plugin").version("0.6.0")
 }
 
 include(":core")
