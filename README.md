@@ -64,6 +64,20 @@ Here is a list of the commands for running each program:
 | desktop app | `app/desktop/src/main.kt`         | `./amper run --module desktop` |
 | android app | `app/android/src/MainActivity.kt` | `./amper run --module android` |
 
+### With Docker
+
+If you'd like to run everything in a containerized environment:
+
+First, publish images locally using:
+- `./pdi.sh rest`
+- `./pdi.sh admin`
+
+Now, you can run docker compose:
+```bash
+docker compose up
+```
+
+
 ## Screenshots
 
 ![](docs/chat-desktop.png)

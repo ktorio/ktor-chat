@@ -3,8 +3,9 @@ ktor:
     application:
         modules:
             - io.ktor.chat.LoggingKt.logging
+            - io.ktor.chat.SecurityKt.security
             - io.ktor.chat.MailKt.mail
-            - io.ktor.chat.RestModuleKt.rest
+            - io.ktor.chat.RestKt.rest
             - io.ktor.chat.HealthCheckKt.healthCheck
             - io.ktor.chat.DatabasesKt.database
             - io.ktor.chat.RepositoriesKt.repositories

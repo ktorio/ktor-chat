@@ -13,6 +13,6 @@ dependencies:
 
 settings:
     jvm:
-        mainClass: io.ktor.chat.server.ApplicationKt
+        mainClass: io.ktor.server.cio.EngineMain
     kotlin:
         serialization: json
