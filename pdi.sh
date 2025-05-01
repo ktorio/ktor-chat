@@ -23,6 +23,34 @@ if [ ! -f "$JAR_PATH" ]; then
     exit 1
 fi
 
+# Run the module to ensure it's runnable
+echo "Running module $MODULE_NAME to ensure it's runnable..."
+./amper run --module $MODULE_NAME &
+RUN_PID=$!
+
+# Check if the process is running
+if ! ps -p $RUN_PID > /dev/null; then
+    echo "Error: Failed to start module $MODULE_NAME"
+    echo "Make sure the module is runnable."
+    exit 1
+fi
+
+# Wait for a few seconds to ensure it starts up properly
+sleep 5
+
+# Check again if the process is still running
+if ! ps -p $RUN_PID > /dev/null; then
+    echo "Error: Module $MODULE_NAME crashed after starting"
+    echo "Make sure the module is runnable."
+    exit 1
+fi
+
+# Kill the process
+kill $RUN_PID 2>/dev/null
+wait $RUN_PID 2>/dev/null
+
+echo "Module $MODULE_NAME is runnable."
+
 # Find all kotlin-args files in the build/temp directory
 ARGS_FILES=$(find build/temp -name "kotlin-args-*.txt" -type f)
 
