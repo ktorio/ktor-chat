@@ -8,12 +8,19 @@ dependencies:
   - $compose.material3: exported
   - $compose.materialIconsExtended: exported
   - $compose.uiTooling: exported
-  - $libs.androidx.lifecycle.viewmodel.compose: exported
-  - $libs.androidx.lifecycle.viewmodel.savedstate: exported
+  - $libs.androidx.lifecycle.viewmodel: exported
 
 dependencies@android:
   - androidx.activity:activity-compose:1.7.2: exported
   - androidx.appcompat:appcompat:1.6.1: exported
+  - $libs.androidx.lifecycle.viewmodel.compose: exported
+  - $libs.androidx.lifecycle.viewmodel.savedstate: exported
+
+dependencies@jvm:
+  - androidx.activity:activity-compose:1.7.2: exported
+  - $libs.androidx.lifecycle.viewmodel.compose: exported
+  - $libs.androidx.lifecycle.viewmodel.savedstate: exported
+  - $libs.androidx.lifecycle.viewmodel.compose.desktop: exported
 
 test-dependencies:
   - $compose.uiTest

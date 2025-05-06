@@ -32,7 +32,7 @@ class ChatViewModel(
     suspend fun verify(): Boolean =
         try {
             client.verify()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.printStackTrace()
             false
         }

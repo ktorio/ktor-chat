@@ -8,7 +8,7 @@ kotlinx-serialization-version = "1.8.1"
 kotlinx-coroutines-version = "1.10.1"
 exposed-version = "0.61.0"
 h2-version = "2.3.232"
-android-lifecycle-version = "2.8.0"
+android-lifecycle-version = "2.8.2"
 postgresql-jdbc = "42.7.5"
 
 [libraries]
@@ -37,7 +37,9 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed-version" }
 h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-jdbc" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "android-lifecycle-version" }
 androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-lifecycle-version" }
+androidx-lifecycle-viewmodel-compose-desktop = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop", version.ref = "android-lifecycle-version" }
 androidx-lifecycle-viewmodel-savedstate = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "android-lifecycle-version" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor-version" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-version" }

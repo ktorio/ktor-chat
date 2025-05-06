@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.chat.*
 import kotlinx.datetime.Clock
 import ktor.chat.client.listInRoom
@@ -27,9 +26,10 @@ import ktor.chat.rooms.RoomsMenu
 import ktor.chat.settings.UserMenu
 import ktor.chat.utils.Remote
 import ktor.chat.vm.ChatViewModel
+import ktor.chat.vm.createViewModel
 
 @Composable
-fun ChatScreen(vm: ChatViewModel = viewModel()) {
+fun ChatScreen(vm: ChatViewModel = createViewModel()) {
     var selectedRoom by remember { vm.room }
     val roomsRemote: Remote<SnapshotStateList<Membership>> by vm.memberships.remoteListWithUpdates()
     val messagesRemote: Remote<SnapshotStateList<Message>> by vm.messages.listInRoom(selectedRoom?.room)

@@ -40,10 +40,18 @@ actual fun createViewModel(): ChatViewModel {
         )
     }.apply {
         LaunchedEffect(Unit) {
-            if (!verify()) logout()
+            try {
+                if (!verify()) logout()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         LaunchedEffect(server.value, token.value, loggedInUser.value, room.value) {
-            saveFile(storageFile, toStorageModel())
+            try {
+                saveFile(storageFile, toStorageModel())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }
