@@ -6,5 +6,6 @@ dependencies:
 settings:
   compose: enabled
   android:
+    applicationId: io.ktor.chat.app
     namespace: io.ktor.chat.app.android
     minSdk: 23
