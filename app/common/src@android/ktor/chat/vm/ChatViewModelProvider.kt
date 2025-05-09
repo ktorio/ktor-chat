@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 actual fun createViewModel(): ChatViewModel {
     return viewModel {
         ChatViewModel(
-            server = "http://172.22.144.116:8080",
+            server = "http://10.0.2.2:8080",
             token = null,
             loggedInUser = null,
             room = null,
