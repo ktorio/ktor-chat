@@ -82,7 +82,7 @@ class MessagesTest {
 private fun Application.mockMessagesRepository() {
     dependencies {
         provide<ObservableRepository<Message, Long>> {
-            ListRepository.create<Message>().observable()
+            ListRepository<Message>().observable()
         }
     }
 }

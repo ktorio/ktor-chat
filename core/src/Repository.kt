@@ -1,9 +1,7 @@
 package io.ktor.chat
 
 import kotlinx.datetime.Instant
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty1
+import kotlin.reflect.*
 import kotlin.reflect.full.*
 
 interface Repository<E: Identifiable<ID>, ID> : ReadOnlyRepository<E, ID> {
@@ -47,6 +45,41 @@ class MapQuery private constructor(private val map: Map<String, List<Any>>): Que
 data object Everything: Query
 data object Nothing: Query
 
+inline fun <reified E: Identifiable<Long>> ListRepository(vararg items: E): ListRepository<E, Long> {
+    val eType = E::class
+    val idProperty = eType.memberProperties.find { it.name == "id" }
+    check(idProperty != null) {
+        "Entity type should have id property"
+    }
+
+    val copyFunction = eType.memberFunctions.find { it.name == "copy" }
+    check(copyFunction != null) {
+        "Entity type should be data class; missing copy() function"
+    }
+
+    val instanceParameter = copyFunction.instanceParameter
+    val idParameter = copyFunction.parameters.find { it.name == "id" }
+    check(instanceParameter != null && idParameter != null) {
+        "Expected id parameter to be in copy()"
+    }
+
+    val copyWithNewId: (E, Long) -> E = { e, id ->
+        eType.cast(copyFunction.callBy(
+            mapOf(
+                instanceParameter to e,
+                idParameter to id,
+            )
+        ))
+    }
+    return ListRepository(
+        list = items.mapIndexed { index, e -> copyWithNewId(e, index.toLong() + 1L) }.toMutableList(),
+        eType = eType,
+        currentId = items.size.toLong(),
+        nextId = { it + 1L },
+        setId = copyWithNewId
+    )
+}
+
 /**
  * In-memory implementation for repository, used for testing.
  */
@@ -57,46 +90,6 @@ class ListRepository<E: Identifiable<ID>, ID>(
     private val nextId: (ID) -> ID,
     private val setId: (E, ID) -> E,
 ): Repository<E, ID> {
-    companion object {
-        /**
-         * Use a little bit of crafty reflection to instantiate this.
-         */
-        inline fun <reified E: Identifiable<Long>> create(vararg items: E): ListRepository<E, Long> {
-            val eType = E::class
-            val idProperty = eType.memberProperties.find { it.name == "id" }
-            check(idProperty != null) {
-                "Entity type should have id property"
-            }
-
-            val copyFunction = eType.memberFunctions.find { it.name == "copy" }
-            check(copyFunction != null) {
-                "Entity type should be data class; missing copy() function"
-            }
-
-            val instanceParameter = copyFunction.instanceParameter
-            val idParameter = copyFunction.parameters.find { it.name == "id" }
-            check(instanceParameter != null && idParameter != null) {
-                "Expected id parameter to be in copy()"
-            }
-
-            val copyWithNewId: (E, Long) -> E = { e, id ->
-                eType.cast(copyFunction.callBy(
-                    mapOf(
-                        instanceParameter to e,
-                        idParameter to id,
-                    )
-                ))
-            }
-            return ListRepository(
-                list = items.mapIndexed { index, e -> copyWithNewId(e, index.toLong() + 1L) }.toMutableList(),
-                eType = eType,
-                currentId = items.size.toLong(),
-                nextId = { it + 1L },
-                setId = copyWithNewId
-            )
-        }
-    }
-
     override suspend fun get(id: ID): E? =
         list.find { it.id == id }
 
@@ -106,7 +99,7 @@ class ListRepository<E: Identifiable<ID>, ID>(
         }
 
     override suspend fun update(e: E) {
-        val index = findIndex(e.id) ?: return 
+        val index = findIndex(e.id).takeIf { it >= 0 } ?: return
         list[index] = e
     }
 

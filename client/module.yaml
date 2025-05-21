@@ -7,24 +7,29 @@ dependencies:
   - $libs.kotlinx.serialization.json: exported
   - $libs.kotlinx.coroutines: exported
   - $libs.kotlinx.datetime: exported
-  - $libs.ktor.client.core: exported
-  - $libs.ktor.client.cio: exported
-  - $libs.ktor.client.content.negotiation: exported
-  - $libs.ktor.json: exported
+  - $ktor.client.core: exported
+  - $ktor.client.cio: exported
+  - $ktor.client.contentNegotiation: exported
+  - $ktor.serialization.kotlinx.json: exported
 
 test-dependencies:
   - $libs.kotlinx.coroutines
 
 test-dependencies@jvm:
   - ../server/rest
-  - $libs.ktor.server.test.host
-  - $libs.ktor.server.core
-  - $libs.ktor.server.auth
-  - $libs.ktor.server.auth.jwt
-  - $libs.ktor.json
-  - $libs.ktor.server.sse
-  - $libs.ktor.server.config.yaml
-  - $libs.ktor.server.content.negotiation
+  - $ktor.server.testHost
+  - $ktor.server.core
+  - $ktor.server.auth
+  - $ktor.server.auth.jwt
+  - $ktor.serialization.kotlinx.json
+  - $ktor.server.sse
+  - $ktor.server.configYaml
+  - $ktor.server.contentNegotiation
 
 repositories:
   - https://maven.pkg.jetbrains.space/public/p/ktor/eap
+
+settings:
+  ktor:
+    enabled: true
+    version: 3.2.0-eap-1328

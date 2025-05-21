@@ -2,17 +2,17 @@ repositories:
   - https://maven.pkg.jetbrains.space/public/p/ktor/eap
 
 dependencies:
-  - $libs.ktor.server.core
-  - $libs.ktor.server.cio
-  - $libs.ktor.server.auth
-  - $libs.ktor.server.auth.jwt
-  - $libs.ktor.json
-  - $libs.ktor.server.sse
-  - $libs.ktor.server.call.logging
-  - $libs.ktor.server.config.yaml
-  - $libs.ktor.server.content.negotiation
+  - $ktor.server.core
+  - $ktor.server.cio
+  - $ktor.server.auth
+  - $ktor.server.auth.jwt
+  - $ktor.serialization.kotlinx.json
+  - $ktor.server.sse
+  - $ktor.server.callLogging
+  - $ktor.server.configYaml
+  - $ktor.server.contentNegotiation
   - $libs.ktor.server.di
-  - $libs.kotlinx.serialization.json
+  - $kotlin.serialization.json
   - $libs.kotlinx.datetime
   - $libs.kotlinx.coroutines
   - $libs.logback.classic
@@ -21,6 +21,13 @@ dependencies:
   - $libs.exposed.jdbc
 
 test-dependencies:
-  - $libs.ktor.server.test.host
+  - $ktor.server.testHost
+  - $ktor.client.contentNegotiation
   - $libs.kotlin.test.junit
-  - $libs.ktor.client.content.negotiation
+
+settings:
+  ktor:
+    enabled: true
+    version: 3.2.0-eap-1322
+  kotlin:
+    serialization: json

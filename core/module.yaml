@@ -6,11 +6,11 @@ dependencies:
     - $libs.kotlinx.serialization.json
     - $libs.kotlinx.datetime
     - $libs.kotlinx.coroutines
-    - $libs.kotlin.reflect
+    - $kotlin.reflect
 
 test-dependencies:
     - $libs.kotlinx.coroutines.test
 
 settings:
     kotlin:
-        serialization: json
+      serialization: json

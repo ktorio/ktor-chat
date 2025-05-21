@@ -7,13 +7,13 @@ import kotlinx.coroutines.test.*
 class ListRepositoryTest {
 
     private val leonardo = User(1L, "Leonardo")
-    private val users = ListRepository.create(
+    private val users = ListRepository(
         leonardo,
         User(2L, "Donatello"),
         User(3L, "Michelangelo"),
         User(4L, "Raphael"),
     )
-    private val messages = ListRepository.create(
+    private val messages = ListRepository(
         Message(leonardo, 1L, Clock.System.now(), "Cowabunga!"),
         Message(leonardo, 2L, Clock.System.now(), "Pizza time!"),
     )

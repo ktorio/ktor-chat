@@ -34,12 +34,12 @@ class MockChatClient(
         // no sessions here yet
     }
 
-    override val users = ListRepository.create(
+    override val users = ListRepository(
         rootUser
     )
 
-    override val rooms = ListRepository.create(lobby)
-    override val messages = ListRepository.create(
+    override val rooms = ListRepository(lobby)
+    override val messages = ListRepository(
         Message(
             author = rootUser,
             room = lobby.id,
@@ -48,5 +48,5 @@ class MockChatClient(
             text = "Hello, World!"
         )
     ).observable()
-    override val memberships: ObservableRepository<Membership, Long> = ListRepository.create<Membership>().observable()
+    override val memberships: ObservableRepository<Membership, Long> = ListRepository<Membership>().observable()
 }
