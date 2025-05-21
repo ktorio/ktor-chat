@@ -7,10 +7,10 @@ dependencies:
   - $libs.kotlinx.serialization.json: exported
   - $libs.kotlinx.coroutines: exported
   - $libs.kotlinx.datetime: exported
-  - $ktor.client.core: exported
-  - $ktor.client.cio: exported
-  - $ktor.client.contentNegotiation: exported
-  - $ktor.serialization.kotlinx.json: exported
+  - $libs.ktor.client.core: exported
+  - $libs.ktor.client.cio: exported
+  - $libs.ktor.client.content.negotiation: exported
+  - $libs.ktor.json: exported
 
 test-dependencies:
   - $libs.kotlinx.coroutines
@@ -32,4 +32,4 @@ repositories:
 settings:
   ktor:
     enabled: true
-    version: 3.2.0-eap-1328
+    version: 3.2.0-eap-1322
