@@ -1,9 +1,0 @@
-product: jvm/app
-
-dependencies:
-  - ../common
-  - $compose.desktop.currentOs
-  - $libs.logback.classic
-
-settings:
-  compose: enabled
