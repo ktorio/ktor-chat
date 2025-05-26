@@ -17,11 +17,12 @@ class MessagesTest {
 
     @Test
     fun `CRUD endpoints happy path`() = testApplication {
-        configureYaml("auth-config.yaml")
         application {
+            dependencies {
+                provide(::messagesRepository)
+            }
             rest()
             mockAuth()
-            mockMessagesRepository()
             messages()
         }
 
@@ -77,12 +78,4 @@ class MessagesTest {
         }
     }
 
-}
-
-private fun Application.mockMessagesRepository() {
-    dependencies {
-        provide<ObservableRepository<Message, Long>> {
-            ListRepository<Message>().observable()
-        }
-    }
 }

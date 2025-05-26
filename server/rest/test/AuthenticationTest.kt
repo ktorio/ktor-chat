@@ -7,10 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.KtorDsl
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -83,32 +80,11 @@ class AuthenticationTest {
 
     private fun authenticationTest(block: suspend ApplicationTestBuilder.() -> Unit) =
         testApplication {
-            dependencies {
-
-            }
-            configureYaml(yamlFile = "auth-config.yaml")
-            application {
-                security()
-                mail()
-                rest()
-                mockUsersRepository()
-                auth()
-                users()
+            configure("application.yaml") {
+                put("ktor.application.dependencies.0", "io.ktor.chat.MocksKt.userRepository")
             }
             this.block()
         }
 
 }
 
-@KtorDsl
-private fun ApplicationTestBuilder.dependencies(block: (DependencyRegistry) -> Unit) {
-
-}
-
-private fun Application.mockUsersRepository() {
-    dependencies {
-        provide<Repository<FullUser, Long>> {
-            ListRepository()
-        }
-    }
-}
