@@ -7,10 +7,13 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.sse.*
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.*
+import signalingCommandsFormat
 
 /**
  * Implementation of ChatClient using Ktor HTTP client for chat server API.
@@ -19,9 +22,9 @@ import io.ktor.serialization.kotlinx.json.*
  */
 class HttpChatClient(
     private var http: HttpClient = HttpClient(CIO).configureForChat(server = null, token = null)
-): ChatClient {
+) : ChatClient {
 
-    constructor(server: String?, token: String?): this(HttpClient(CIO).configureForChat(server, token))
+    constructor(server: String?, token: String?) : this(HttpClient(CIO).configureForChat(server, token))
 
     companion object {
         /**
@@ -37,6 +40,9 @@ class HttpChatClient(
             install(ContentNegotiation) {
                 json()
             }
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(signalingCommandsFormat)
+            }
             install(DefaultRequest) {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
@@ -47,6 +53,8 @@ class HttpChatClient(
             }
         }
     }
+
+    fun getHttp() = http
 
     override suspend fun verify(): Boolean {
         return http.get("/auth/verify").status.isSuccess()
@@ -60,7 +68,7 @@ class HttpChatClient(
         http = HttpClient(CIO).configureForChat(server, authentication.token)
         return authentication
     }
-    
+
     override suspend fun register(
         server: String,
         email: String,
@@ -93,7 +101,8 @@ class HttpChatClient(
                     response.bodyAsText() == "pong"
                 else false
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
 

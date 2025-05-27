@@ -8,6 +8,7 @@ dependencies:
   - $libs.ktor.server.auth.jwt
   - $libs.ktor.json
   - $libs.ktor.server.sse
+  - $libs.ktor.server.websockets
   - $libs.ktor.server.call.logging
   - $libs.ktor.server.config.yaml
   - $libs.ktor.server.content.negotiation

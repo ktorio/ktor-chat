@@ -2,15 +2,17 @@ package ktor.chat.vm
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ktor.chat.client.ChatClient
 
 @Composable
-actual fun createViewModel(): ChatViewModel {
+actual fun createViewModel(chatClient: ChatClient?): ChatViewModel {
     return viewModel {
-        ChatViewModel(
-            server = "http://172.22.144.116:8080",
-            token = null,
-            loggedInUser = null,
-            room = null,
-        )
+        // proxy to localhost that used in the Android emulator
+        val server = "http://10.0.2.2:8080"
+        if (chatClient != null) {
+            ChatViewModel(server = server, client = chatClient)
+        } else {
+            ChatViewModel(server = server)
+        }
     } // TODO save state
 }

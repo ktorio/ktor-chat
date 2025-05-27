@@ -10,13 +10,13 @@ import ktor.chat.client.ServerStatusClient
 
 class ChatViewModel(
     server: String,
-    token: String?,
-    loggedInUser: User?,
-    room: Membership?,
+    token: String? = null,
+    loggedInUser: User? = null,
+    room: Membership? = null,
     private val client: ChatClient = HttpChatClient(
         server = server,
         token = token,
-    ),
+    )
 ): ViewModel(), ServerStatusClient by client, ChatRestClient by client {
     val server = mutableStateOf(server)
     val token = mutableStateOf(token)
@@ -44,14 +44,14 @@ class ChatViewModel(
         this.token.value = authentication.token
         this.loggedInUser.value = authentication.user
     }
-    
+
     suspend fun register(server: String, email: String, name: String, password: String) {
         val response = client.register(server, email, name, password)
 
         this.server.value = server
         this.token.value = response.token
         this.loggedInUser.value = response.user
-        this.confirmation.value = Confirmation.Pending(response.code ?: "")
+        this.confirmation.value = Confirmation.Pending(response.code)
     }
 
     suspend fun confirm(code: String) {

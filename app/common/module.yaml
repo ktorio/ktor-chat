@@ -15,6 +15,9 @@ dependencies@android:
   - androidx.appcompat:appcompat:1.6.1: exported
   - $libs.androidx.lifecycle.viewmodel.compose: exported
   - $libs.androidx.lifecycle.viewmodel.savedstate: exported
+  - androidx.media3:media3-exoplayer:1.2.1: exported
+  - androidx.media3:media3-ui:1.2.1: exported
+  - androidx.media3:media3-common:1.2.1: exported
 
 dependencies@jvm:
   - androidx.activity:activity-compose:1.7.2: exported

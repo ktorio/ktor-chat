@@ -1,6 +1,7 @@
 package io.ktor.chat
 
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -10,7 +11,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sse.*
+import io.ktor.server.websocket.WebSockets
 import io.ktor.util.*
+import signalingCommandsFormat
 
 fun Application.rest() {
     install(ContentNegotiation) {
@@ -35,9 +38,12 @@ fun Application.rest() {
         }
     }
     install(SSE)
+    install(WebSockets) {
+        contentConverter = KotlinxWebsocketSerializationConverter(signalingCommandsFormat)
+    }
 }
 
-inline fun <reified E: Identifiable<Long>> Route.restGet(
+inline fun <reified E : Identifiable<Long>> Route.restGet(
     repository: Repository<E, Long>
 ) {
     get {
@@ -46,7 +52,7 @@ inline fun <reified E: Identifiable<Long>> Route.restGet(
     }
 }
 
-inline fun <reified E: Identifiable<Long>> Route.restMutations(
+inline fun <reified E : Identifiable<Long>> Route.restMutations(
     repository: Repository<E, Long>
 ) {
     post {

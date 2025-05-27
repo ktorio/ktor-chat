@@ -24,8 +24,8 @@ inline fun <reified E: Identifiable<ID>, ID> ObservableRepository<E, ID>.remoteL
             
             when(changeType) {
                 ChangeType.CREATE -> currentList.add(e)
-                ChangeType.UPDATE -> currentList.replaceAll { if (it.id == e.id) e else it }
-                ChangeType.DELETE -> currentList.removeIf { it.id == e.id }
+                ChangeType.UPDATE -> currentList.map { if (it.id == e.id) e else it }
+                ChangeType.DELETE -> currentList.removeAll { it.id == e.id }
             }
         }
         onDispose {

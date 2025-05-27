@@ -1,19 +1,20 @@
 package ktor.chat
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import JoinCall
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment.Companion.BottomCenter
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.ktor.chat.*
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import ktor.chat.client.listInRoom
 import ktor.chat.client.remoteList
@@ -26,14 +27,69 @@ import ktor.chat.rooms.RoomsMenu
 import ktor.chat.settings.UserMenu
 import ktor.chat.utils.Remote
 import ktor.chat.vm.ChatViewModel
+import ktor.chat.vm.VideoCallViewModel
 import ktor.chat.vm.createViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(vm: ChatViewModel = createViewModel()) {
+fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallViewModel? = null) {
+    var isInCall by remember { videoCallVM?.isInVideoCall ?: mutableStateOf(false) }
     var selectedRoom by remember { vm.room }
+    val currentUser by remember { vm.loggedInUser }
     val roomsRemote: Remote<SnapshotStateList<Membership>> by vm.memberships.remoteListWithUpdates()
     val messagesRemote: Remote<SnapshotStateList<Message>> by vm.messages.listInRoom(selectedRoom?.room)
     val smallScreen by remember { derivedStateOf { vm.screenSize.value.first < 1400 } }
+    val scope = rememberCoroutineScope()
+
+    // Track incoming call and which user is calling
+    var showIncomingCallDialog by remember { mutableStateOf(false) }
+    var callingRequest by remember { mutableStateOf<JoinCall?>(null) }
+
+    LaunchedEffect(Unit) {
+        videoCallVM?.callRequests?.collect { request ->
+            callingRequest = request
+            showIncomingCallDialog = true
+        }
+    }
+
+    if (showIncomingCallDialog && callingRequest != null && selectedRoom != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showIncomingCallDialog = false
+                scope.launch {
+                    videoCallVM?.rejectCall(callingRequest!!)
+                }
+            },
+            title = { Text("Incoming Call") },
+            text = { Text("${callingRequest!!.sender.name} is calling. Do you want to join?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showIncomingCallDialog = false
+                        scope.launch {
+                            videoCallVM?.acceptCall(callingRequest!!)
+                            isInCall = true
+                        }
+                    }
+                ) {
+                    Text("Accept")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showIncomingCallDialog = false
+                        scope.launch {
+                            videoCallVM?.rejectCall(callingRequest!!)
+                        }
+                    }
+                ) {
+                    Text("Decline")
+                }
+            }
+        )
+    }
+
 
     RemoteLoader(roomsRemote) { rooms ->
         RoomsMenu(
@@ -45,17 +101,21 @@ fun ChatScreen(vm: ChatViewModel = createViewModel()) {
                 selectedRoom = it
             },
             onJoin = { joinedRoom ->
-                selectedRoom = vm.memberships.create(Membership(
-                    user = vm.loggedInUser.value!!,
-                    room = joinedRoom,
-                ))
+                selectedRoom = vm.memberships.create(
+                    Membership(
+                        user = currentUser!!,
+                        room = joinedRoom,
+                    )
+                )
             },
             onCreate = { newRoomName ->
                 vm.rooms.create(Room(newRoomName)).let { newRoom ->
-                    selectedRoom = vm.memberships.create(Membership(
-                        user = vm.loggedInUser.value!!,
-                        room = newRoom,
-                    ))
+                    selectedRoom = vm.memberships.create(
+                        Membership(
+                            user = currentUser!!,
+                            room = newRoom,
+                        )
+                    )
                 }
             },
             sideMenu = {
@@ -76,17 +136,24 @@ fun ChatScreen(vm: ChatViewModel = createViewModel()) {
                 onDeleteRoom = {
                     vm.rooms.delete(it.id)
                     selectedRoom = null
-                }
-            ) { messageText ->
-                vm.messages.create(
-                    Message(
-                        author = vm.loggedInUser.value!!,
-                        created = Clock.System.now(),
-                        room = selectedRoom!!.room.id,
-                        text = messageText,
+                },
+                onCreate = { messageText ->
+                    vm.messages.create(
+                        Message(
+                            author = currentUser!!,
+                            created = Clock.System.now(),
+                            room = selectedRoom!!.room.id,
+                            text = messageText,
+                        )
                     )
-                )
-            }
+                },
+                onVideoCallInitiated = {
+                    videoCallVM?.let {
+                        it.initiateCall(selectedRoom!!.room.id)
+                        isInCall = true
+                    }
+                }
+            )
         }
     }
 }
@@ -99,18 +166,25 @@ private fun MessagesView(
     onUpdateRoom: suspend (Room) -> Unit,
     onDeleteRoom: suspend (Room) -> Unit,
     onCreate: suspend (String) -> Unit,
+    onVideoCallInitiated: (suspend () -> Unit)?
 ) {
+    if (selectedRoom == null) {
+        Text("Select a room to begin")
+        return
+    }
 
-    when (selectedRoom) {
-        null -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-            Text("Select a room to begin")
-        }
-        else -> RemoteLoader(messagesRemote) { messages ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                RoomHeader(modifier = Modifier.align(TopStart).height(50.dp), selectedRoom, onLeaveRoom, onUpdateRoom, onDeleteRoom)
-                MessageList(modifier = Modifier.align(TopCenter).padding(top = 50.dp, bottom = 60.dp), messages)
-                MessageInput(modifier = Modifier.align(BottomCenter).height(60.dp), onCreate)
-            }
+    RemoteLoader(messagesRemote) { messages ->
+        Box(modifier = Modifier.fillMaxWidth().safeContentPadding()) {
+            RoomHeader(
+                modifier = Modifier.align(TopStart).height(50.dp),
+                membership = selectedRoom,
+                onLeaveRoom = onLeaveRoom,
+                onUpdateRoom = onUpdateRoom,
+                onDeleteRoom = onDeleteRoom,
+                onVideoCallInitiated = onVideoCallInitiated
+            )
+            MessageList(modifier = Modifier.align(TopCenter).padding(top = 50.dp, bottom = 60.dp), messages)
+            MessageInput(modifier = Modifier.align(BottomCenter).height(60.dp), onCreate)
         }
     }
 }

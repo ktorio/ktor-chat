@@ -5,6 +5,6 @@ import ktor.chat.vm.createViewModel
 
 fun main() = application {
     Window(title = "KTOR CHAT", onCloseRequest = ::exitApplication) {
-        ChatApplication(createViewModel())
+        ChatApplication(chatVm = createViewModel(), videoCallVm = null)
     }
 }

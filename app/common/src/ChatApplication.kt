@@ -2,26 +2,39 @@ package ktor.chat
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.layout.Layout
+import ktor.chat.calls.VideoCallScreen
 import ktor.chat.login.ConfirmationScreen
 import ktor.chat.login.LoginScreen
 import ktor.chat.vm.ChatViewModel
 import ktor.chat.vm.Confirmation
+import ktor.chat.vm.VideoCallViewModel
 import ktor.chat.vm.createViewModel
 
 @Composable
-fun ChatApplication(vm: ChatViewModel = createViewModel()) {
-    val loggedInUser by vm.loggedInUser
-    val confirmation by vm.confirmation
-    var screenSize by remember { vm.screenSize }
+fun ChatApplication(chatVm: ChatViewModel = createViewModel(), videoCallVm: VideoCallViewModel?) {
+    val loggedInUser by chatVm.loggedInUser
+    val confirmation by chatVm.confirmation
+    val isInVideoCall by remember { videoCallVm?.isInVideoCall ?: mutableStateOf(false) }
+    var screenSize by remember { chatVm.screenSize }
+
+    LaunchedEffect(loggedInUser) {
+        if (loggedInUser == null) {
+            return@LaunchedEffect
+        }
+        videoCallVm?.user = loggedInUser
+        videoCallVm?.init(this)
+    }
 
     Layout(
         content = {
             if (confirmation is Confirmation.Pending)
-                ConfirmationScreen(vm)
+                ConfirmationScreen(chatVm)
             else if (loggedInUser == null)
-                LoginScreen(vm)
+                LoginScreen(chatVm)
+            else if (videoCallVm != null && isInVideoCall)
+                VideoCallScreen(videoCallVm, chatVm)
             else
-                ChatScreen(vm)
+                ChatScreen(chatVm, videoCallVm)
         },
         // Complicated bit of code to get the window dimensions
         measurePolicy = { measurables, constraints ->
