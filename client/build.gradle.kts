@@ -24,6 +24,8 @@ kotlin {
                 api(libs.kotlinx.datetime)
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.cio)
+                api(libs.ktor.client.webrtc)
+                api(libs.ktor.client.websockets)
                 api(libs.ktor.client.content.negotiation)
                 api(libs.ktor.json)
             }

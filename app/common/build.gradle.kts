@@ -36,6 +36,10 @@ kotlin {
                 api(libs.androidx.activity.compose)
                 api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.savedstate)
+                api(libs.androidx.media3.common)
+                api(libs.androidx.media3.ui)
+                api(libs.androidx.media3.exoplayer)
+                api(libs.getstream.webrtc)
             }
         }
         

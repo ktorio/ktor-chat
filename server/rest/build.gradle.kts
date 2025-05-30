@@ -7,6 +7,7 @@ plugins {
 dependencies {
     implementation(project(":server:common"))
     implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.server.websockets)
     implementation(libs.postgresql)
 
     testImplementation(libs.ktor.server.test.host)

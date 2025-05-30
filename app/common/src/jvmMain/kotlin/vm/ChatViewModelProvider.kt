@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.chat.*
+import io.ktor.chat.client.ChatClient
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -21,7 +22,7 @@ import kotlin.io.path.outputStream
  */
 @OptIn(ExperimentalSerializationApi::class)
 @Composable
-actual fun createViewModel(): ChatViewModel {
+actual fun createViewModel(chatClient: ChatClient?): ChatViewModel {
     val storageFile = Paths.get("state.json")
     val stored: StoredStateModel? = try {
         storageFile.takeIf { it.exists() }?.inputStream()?.use { input ->
@@ -32,12 +33,18 @@ actual fun createViewModel(): ChatViewModel {
         null
     }
     return viewModel {
-        ChatViewModel(
-            stored?.server ?: "http://localhost:8080",
-            stored?.token,
-            stored?.loggedInUser,
-            stored?.room,
-        )
+        val server = stored?.server ?: "http://localhost:8080"
+        if (chatClient != null) {
+            ChatViewModel(
+                server,
+                stored?.token,
+                stored?.loggedInUser,
+                stored?.room,
+                chatClient,
+            )
+        } else {
+            ChatViewModel(server, stored?.token, stored?.loggedInUser, stored?.room)
+        }
     }.apply {
         LaunchedEffect(Unit) {
             try {
