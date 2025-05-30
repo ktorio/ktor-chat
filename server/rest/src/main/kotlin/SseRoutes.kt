@@ -1,6 +1,5 @@
 package io.ktor.chat
 
-import io.ktor.chat.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.sse.*

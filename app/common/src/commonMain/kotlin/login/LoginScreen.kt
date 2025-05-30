@@ -10,17 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import io.ktor.chat.vm.ChatViewModel
 import io.ktor.chat.components.ErrorText
-import io.ktor.chat.utils.load
 import io.ktor.chat.utils.tryRequest
 import kotlin.time.Duration.Companion.seconds
 
