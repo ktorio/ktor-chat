@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -32,7 +35,9 @@ fun RoomsMenu(
     @Composable
     fun RoomsNavigation() {
         Column(
-            modifier = Modifier.fillMaxSize().padding(8.dp, 12.dp),
+            modifier = Modifier.fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(8.dp, 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             if (joinedRooms.isNotEmpty()) {

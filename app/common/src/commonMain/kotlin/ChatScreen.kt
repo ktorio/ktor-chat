@@ -1,9 +1,13 @@
 package io.ktor.chat
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +30,7 @@ import io.ktor.chat.messages.MessageList
 import io.ktor.chat.rooms.RoomHeader
 import io.ktor.chat.rooms.RoomsMenu
 import io.ktor.chat.settings.UserMenu
+import io.ktor.chat.utils.Done
 import io.ktor.chat.utils.Remote
 import io.ktor.chat.vm.ChatViewModel
 import io.ktor.chat.vm.VideoCallViewModel
@@ -36,7 +41,9 @@ import io.ktor.chat.vm.createViewModel
 fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallViewModel? = null) {
     var selectedRoom by remember { vm.room }
     val currentUser by remember { vm.loggedInUser }
-    val roomsRemote: Remote<SnapshotStateList<Membership>> by vm.memberships.remoteListWithUpdates()
+    val roomsRemote: Remote<SnapshotStateList<Membership>> by vm.memberships.remoteListWithUpdates(
+        predicate = { it.user.id == currentUser!!.id }
+    )
     val messagesRemote: Remote<SnapshotStateList<Message>> by vm.messages.listInRoom(selectedRoom?.room)
     val smallScreen by remember { derivedStateOf { vm.screenSize.value.first < 1400 } }
     val scope = rememberCoroutineScope()
@@ -52,7 +59,12 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
         }
     }
 
-    if (showIncomingCallDialog && callingRequest != null && selectedRoom != null) {
+    fun exisingRoomWithId(id: Long): Membership? = when (roomsRemote) {
+        is Done -> (roomsRemote as Done<SnapshotStateList<Membership>>).value.firstOrNull { it.room.id == id }
+        else -> null
+    }
+
+    if (showIncomingCallDialog && callingRequest != null) {
         AlertDialog(
             onDismissRequest = {
                 showIncomingCallDialog = false
@@ -66,6 +78,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
                 Button(
                     onClick = {
                         showIncomingCallDialog = false
+                        selectedRoom = exisingRoomWithId(callingRequest!!.roomId) ?: return@Button
                         scope.launch {
                             videoCallVM?.acceptCall(callingRequest!!)
                         }
@@ -106,6 +119,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
                         room = joinedRoom,
                     )
                 )
+                videoCallVM?.reinitSession()
             },
             onCreate = { newRoomName ->
                 vm.rooms.create(Room(newRoomName)).let { newRoom ->
@@ -115,6 +129,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
                             room = newRoom,
                         )
                     )
+                    videoCallVM?.reinitSession()
                 }
             },
             sideMenu = {
@@ -126,6 +141,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
                 messagesRemote,
                 onLeaveRoom = {
                     vm.memberships.delete(it.id)
+                    videoCallVM?.reinitSession()
                     selectedRoom = null
                 },
                 onUpdateRoom = {
@@ -134,6 +150,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
                 },
                 onDeleteRoom = {
                     vm.rooms.delete(it.id)
+                    videoCallVM?.reinitSession()
                     selectedRoom = null
                 },
                 onCreate = { messageText ->
@@ -170,7 +187,7 @@ private fun MessagesView(
     }
 
     RemoteLoader(messagesRemote) { messages ->
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().windowInsetsPadding(WindowInsets.safeDrawing)) {
             RoomHeader(
                 modifier = Modifier.align(TopStart).height(50.dp),
                 membership = selectedRoom,

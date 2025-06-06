@@ -3,6 +3,7 @@ package io.ktor.chat.vm
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import io.ktor.chat.JoinCall
+import io.ktor.chat.Reconnect
 import io.ktor.chat.client.CallSessionManager
 import io.ktor.chat.client.CallSessionManagerImpl
 import io.ktor.chat.client.SignalingClient
@@ -21,6 +22,10 @@ class VideoCallViewModel(
     fun init(scope: CoroutineScope) {
         signalingClient.connect(scope)
         scope.launch { listenCommandsFlow() }
+    }
+
+    suspend fun reinitSession() {
+        signalingClient.sendCommand(Reconnect())
     }
 
     override suspend fun initiateCall(roomId: Long) {

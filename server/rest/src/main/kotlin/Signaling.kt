@@ -9,16 +9,21 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-object SessionManager {
-
+class SessionManager(
+    private val memberships: Repository<Membership, Long>
+) {
     data class SignalingEvent(val command: SignalingCommand, val recipientId: Long)
 
     private val sessionManagerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -30,23 +35,29 @@ object SessionManager {
     private val roomClients = mutableMapOf<Long, MutableSet<Long>>()
 
     // Flow for signaling commands, with room ID
-    private val _signalingCommands = MutableSharedFlow<SignalingEvent>()
+    private val _signalingCommands = MutableSharedFlow<SignalingEvent>(1)
     val signalingCommands: SharedFlow<SignalingEvent> = _signalingCommands.asSharedFlow()
 
-    fun onClientConnected(clientId: Long, roomId: Long) {
-        sessionManagerScope.launch {
-            mutex.withLock {
-                val currentRoomClients = roomClients.getOrPut(roomId) { mutableSetOf() }
-                currentRoomClients.add(clientId)
+    suspend fun userRooms(userId: Long): List<Long> {
+        val query = MapQuery { this["user"] = userId }
+        return memberships.list(query).map { it.room.id }
+    }
 
-                if (roomsInCall.contains(roomId)) {
-                    _signalingCommands.emit(SignalingEvent(command = OngoingCall(roomId), recipientId = clientId))
-                }
+    fun onClientConnected(client: User): Job = sessionManagerScope.launch {
+        val rooms = userRooms(client.id)
+        println("Client ${client.name} connected to rooms ${rooms.joinToString(", ")}")
+
+        for (roomId in rooms) {
+            mutex.withLock {
+                roomClients.getOrPut(roomId) { mutableSetOf() }.add(client.id)
             }
+
+            if (!roomsInCall.contains(roomId)) continue
+            _signalingCommands.tryEmit(SignalingEvent(command = OngoingCall(roomId), recipientId = client.id))
         }
     }
 
-    fun onCommand(client: User, command: SignalingCommand) {
+    fun onRoomCommand(client: User, command: RoomCommand) {
         require(roomClients[command.roomId]?.contains(client.id) == true) {
             "Client ${client.id} is not in room ${command.roomId}"
         }
@@ -61,17 +72,17 @@ object SessionManager {
         }
     }
 
-    private fun broadcast(senderId: Long, command: SignalingCommand) {
+    private fun broadcast(senderId: Long, command: RoomCommand): Job {
         val allClients = roomClients[command.roomId] ?: error("Room ${command.roomId} not found")
-        sessionManagerScope.launch {
+        return sessionManagerScope.launch {
             for (recipientId in allClients) {
                 if (recipientId == senderId) continue
-                _signalingCommands.emit(SignalingEvent(command, recipientId))
+                _signalingCommands.tryEmit(SignalingEvent(command, recipientId))
             }
         }
     }
 
-    private fun sendTo(senderId: Long, recipientId: Long, command: SignalingCommand) {
+    private fun sendTo(senderId: Long, recipientId: Long, command: RoomCommand) {
         require(senderId != recipientId) {
             "Sender and recipient cannot be the same"
         }
@@ -79,7 +90,7 @@ object SessionManager {
             "Client $recipientId is not in room ${command.roomId}"
         }
         sessionManagerScope.launch {
-            _signalingCommands.emit(SignalingEvent(command, recipientId))
+            _signalingCommands.tryEmit(SignalingEvent(command, recipientId))
         }
     }
 
@@ -100,26 +111,31 @@ object SessionManager {
         if (roomClients[command.roomId]?.contains(client.id) != true) {
             return
         }
-
-        broadcast(client.id, command)
-        if (!disconnected) {
-            return
-        }
         sessionManagerScope.launch {
+            broadcast(client.id, command).join()
+            if (!disconnected) {
+                return@launch
+            }
             mutex.withLock {
                 roomClients[command.roomId]?.remove(client.id)
+                if (roomClients[command.roomId]?.isEmpty() == true) {
+                    roomsInCall.remove(command.roomId)
+                }
             }
+        }
+    }
+
+    fun onClientDisconnected(client: User) = sessionManagerScope.launch {
+        val rooms = userRooms(client.id)
+        for (roomId in rooms) {
+            onClientLeft(client, LeaveCall(roomId, client), disconnected = true)
         }
     }
 }
 
 fun Application.signaling() {
     val memberships: Repository<Membership, Long> by dependencies
-
-    suspend fun userRooms(userId: Long): List<Long> {
-        val query = MapQuery { this["user"] = userId }
-        return memberships.list(query).map { it.room.id }
-    }
+    val manager = SessionManager(memberships)
 
     routing {
         authenticate {
@@ -127,38 +143,34 @@ fun Application.signaling() {
                 environment.log.info("SSE subscribe ${call.request.path()}")
                 val user = call.principal<ChatPrincipal>()?.user ?: throw BadRequestException("Bad token")
 
-                val startJob = launch {
-                    for (roomId in userRooms(user.id)) {
-                        SessionManager.onClientConnected(user.id, roomId)
-                    }
-                }
-
                 // Listen for commands from all user rooms
                 val listenCommandsJob = launch {
-                    SessionManager.signalingCommands
+                    manager.signalingCommands
                         .filter { it.recipientId == user.id }
-                        .collect { sendSerialized(it.command) }
+                        .collect {
+                            println("Sending command to client ${signalingCommandsFormat.encodeToString(it.command)}")
+                            sendSerialized(it.command)
+                        }
                 }
+
+                val startJob = manager.onClientConnected(user)
 
                 runCatching {
                     while (true) {
                         val command = receiveDeserialized<SignalingCommand>()
-                        SessionManager.onCommand(client = user, command)
+                        println("Received command: ${signalingCommandsFormat.encodeToString(command)}")
+                        when (command) {
+                            is Reconnect -> manager.onClientConnected(user)
+                            is RoomCommand -> manager.onRoomCommand(user, command)
+                        }
                         call.respond(HttpStatusCode.OK)
                     }
                 }.onFailure { it.printStackTrace() }
 
-                coroutineContext.job.invokeOnCompletion {
-                    environment.log.info("Client ${user.name} disconnected")
-                    launch {
-                        userRooms(user.id).forEach { roomId ->
-                            // will skip if the client is already disconnected
-                            SessionManager.onClientLeft(user, LeaveCall(roomId, user), disconnected = true)
-                        }
-                    }
-                    startJob.takeIf { it.isActive }?.cancel()
-                    listenCommandsJob.cancel()
-                }
+                environment.log.info("Client ${user.name} disconnected")
+                manager.onClientDisconnected(user)
+                startJob.takeIf { it.isActive }?.cancel()
+                listenCommandsJob.cancel()
             }
         }
     }

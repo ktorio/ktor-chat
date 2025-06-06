@@ -95,6 +95,9 @@ class CallSessionManagerImpl(
     override suspend fun listenCommandsFlow() {
         println("Listening for the commands flow")
         signalingClient.signalingCommandFlow.collect { command ->
+            if (command !is RoomCommand) {
+                error("Received unexpected command: $command")
+            }
             // Filter out commands for other rooms (except for a JoinCall which may start a new call)
             // Though we should not face such a situation yet
             if (command.roomId != roomId && command !is JoinCall) {
@@ -132,7 +135,7 @@ class CallSessionManagerImpl(
             return
         }
         // If we're already in a call and don't have a connection with this user yet, create one and send an offer
-        if (peerManagers[command.sender.id] == null) {
+        if (command.roomId == roomId && peerManagers[command.sender.id] == null) {
             makeConnection(withUser = command.sender, isInitiator = true).sendOffer()
         }
     }

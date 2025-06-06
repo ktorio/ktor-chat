@@ -45,7 +45,7 @@ fun VideoCallScreen(vm: VideoCallViewModel, chatVm: ChatViewModel) {
 
         // Main content area for video tracks
         Box(
-            modifier = Modifier.padding(top=50.dp, bottom = 80.dp) // Space for controls
+            modifier = Modifier.fillMaxSize().padding(top=50.dp, bottom = 80.dp) // Space for controls
         ) {
             if (remoteVideoTracks.isEmpty()) {
                 Text(

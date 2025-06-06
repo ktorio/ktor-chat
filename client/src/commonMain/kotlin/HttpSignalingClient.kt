@@ -23,21 +23,23 @@ class HttpSignalingClient(private val http: () -> HttpClient) : SignalingClient 
     }
 
     override fun connect(scope: CoroutineScope): Job = scope.launch {
-        http().webSocket(path = "call") {
-            val sendJob = scope.launch {
-                _outgoingCommands.collect { sendSerialized(it) }
-            }
-
-            println("Listening for commands on WebSocket")
-            runCatching {
-                while (true) {
-                    val command = receiveDeserialized<SignalingCommand>()
-                    println("Received command: $command")
-                    _signalingCommandFlow.emit(command)
+        while (true) {
+            http().webSocket(path = "call") {
+                val sendJob = scope.launch {
+                    _outgoingCommands.collect { sendSerialized(it) }
                 }
-            }
 
-            sendJob.takeIf { it.isActive }?.cancel()
+                println("Listening for commands on WebSocket")
+                runCatching {
+                    while (true) {
+                        val command = receiveDeserialized<SignalingCommand>()
+                        println("Received command: $command")
+                        _signalingCommandFlow.emit(command)
+                    }
+                }
+
+                sendJob.takeIf { it.isActive }?.cancel()
+            }
         }
     }
 }

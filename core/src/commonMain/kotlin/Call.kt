@@ -10,7 +10,9 @@ import kotlinx.serialization.modules.polymorphic
  * All commands must specify which room they apply to.
  */
 @Serializable
-sealed interface SignalingCommand {
+sealed interface SignalingCommand
+
+sealed interface RoomCommand : SignalingCommand {
     val roomId: Long
 }
 
@@ -18,7 +20,7 @@ sealed interface SignalingCommand {
  * Base interface for commands that are directed to a specific user.
  * Contains sender information and the intended recipient ID.
  */
-sealed interface DirectedCommand : SignalingCommand {
+sealed interface DirectedCommand : RoomCommand {
     val sender: User
     val recipientId: Long
 }
@@ -31,7 +33,7 @@ sealed interface DirectedCommand : SignalingCommand {
  * Purpose: Informs the UI that the user is joining a room with an active call.
  */
 @Serializable
-class OngoingCall(override val roomId: Long) : SignalingCommand
+class OngoingCall(override val roomId: Long) : RoomCommand
 
 /**
  * Request to join or initiate a video call in a room.
@@ -47,7 +49,7 @@ class OngoingCall(override val roomId: Long) : SignalingCommand
  * This is the first step in establishing a WebRTC connection.
  */
 @Serializable
-class JoinCall(override val roomId: Long, val sender: User) : SignalingCommand
+class JoinCall(override val roomId: Long, val sender: User) : RoomCommand
 
 /**
  * Contains the SDP (Session Description Protocol) offer for establishing a WebRTC connection.
@@ -127,7 +129,18 @@ class IceExchange(
 class LeaveCall(
     override val roomId: Long,
     val sender: User
-) : SignalingCommand
+) : RoomCommand
+
+/**
+ * Command sent by the client to reinitialize connections to all user rooms.
+ *
+ * When sent: When the client needs to refresh room connections (e.g., after joining new rooms).
+ *
+ * Purpose: Triggers the server to reconnect the client to all rooms they're a member of
+ * and send appropriate notifications for any active calls.
+ */
+@Serializable
+class Reconnect : SignalingCommand
 
 /**
  * Custom JSON configuration for serializing and deserializing WebRTC signaling commands.
@@ -140,6 +153,8 @@ val signalingCommandsFormat = Json {
             subclass(PickUpCall::class, PickUpCall.serializer())
             subclass(IceExchange::class, IceExchange.serializer())
             subclass(LeaveCall::class, LeaveCall.serializer())
+            subclass(SdpAnswer::class, SdpAnswer.serializer())
+            subclass(Reconnect::class, Reconnect.serializer())
         }
     }
 }

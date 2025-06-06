@@ -31,6 +31,7 @@ inline fun <T> load(vararg keys: Any, crossinline fetch: suspend () -> T): State
             result.value = try {
                 Done(fetch())
             } catch (e: Exception) {
+                e.printStackTrace()
                 Error(e.message ?: "Unknown error!")
             }
         }
