@@ -5,12 +5,10 @@ import io.ktor.server.config.yaml.*
 import io.ktor.server.testing.*
 import kotlinx.datetime.Clock
 import io.ktor.chat.client.HttpChatClient.Companion.configureForChat
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 class HttpChatClientTest {
 
-    @Ignore // TODO
     @Test
     fun endToEndTest() = testApplication {
         environment {
@@ -23,13 +21,14 @@ class HttpChatClientTest {
             "bob@law.blog",
             "pa55word"
         )
+        val (name, email, password) = testUser
         
-        HttpChatClient(client.configureForChat()).apply {
-            val (name, email, password) = testUser
-            register(serverUrl, email, name, password)
-            login(serverUrl, testUser.email, testUser.password).apply {
-                testUser = FullUser(name, email, password, user.id)
-            }
+        HttpChatClient(client.configureForChat()).register(serverUrl, email, name, password)
+        // Create a new client each time to circumvent the client wrapper from replacing our test client
+        val authentication = HttpChatClient(client.configureForChat())
+            .login(serverUrl, testUser.email, testUser.password)
+        testUser = FullUser(name, email, password, authentication.user.id)
+        HttpChatClient(client.configureForChat(token = authentication.token)).apply {
             val room = rooms.create(Room("lobby"))
             val message = messages.create(Message(
                 author = testUser,
