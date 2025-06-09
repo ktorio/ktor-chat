@@ -1,6 +1,12 @@
 package io.ktor.chat
 
-import kotlinx.datetime.Instant
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 import kotlin.reflect.*
 import kotlin.reflect.full.*
 
@@ -117,37 +123,77 @@ class ListRepository<E: Identifiable<ID>, ID>(
         list.filter(query.toPredicate(eType))
 }
 
+@OptIn(InternalSerializationApi::class)
 fun <E: Any> Query.toPredicate(eType: KClass<E>): (E) -> Boolean =
     when (this) {
         is Everything -> {{ true }}
         is Nothing -> {{ false }}
 
         is MapQuery -> {
+            // Use serialization to match the property of the actual class
+            val serializer = eType.serializer()
+
             val clauses: List<(E) -> Boolean> = entries.map { (key, values) ->
-                val property = findMember(eType, key)
-                val getter = property::get
-                val parseFunction = property.parseFunction()
-                val clause: (E) -> Boolean = { getter(it) in values.map { parseFunction(it.toString()) } }
-                clause
+                val propertyExtractor = PropertyExtractor<E, Any?>(key)
+                ({ entity: E ->
+                    val propertyValue = propertyExtractor.extract(entity, serializer)
+                    values.any { value ->
+                        propertyValue.toString() == value.toString()
+                    }
+                })
             }
+
+            // Return a function that checks all clauses
             ({ clauses.all { clause -> clause(it) } })
         }
     }
 
-private fun <E : Any> findMember(eType: KClass<E>, key: String): KProperty1<E, *> =
-    (eType.memberProperties.find { it.name == key }
-        ?: throw IllegalArgumentException("Missing property: $key"))
-
-@Suppress("UNCHECKED_CAST")
-private fun <V> KProperty<V>.parseFunction(): (String) -> V {
-    when(returnType) {
-        String::class.createType() -> return { it as V }
-        Int::class.createType() -> return { it.toInt() as V }
-        Long::class.createType() -> return { it.toLong() as V }
-        Instant::class.createType() -> return { Instant.parse(it) as V }
-        else -> throw IllegalArgumentException("Unsupported type: $returnType")
-    }
-}
-
 suspend fun <E: Identifiable<ID>, ID> Repository<E, ID>.list(params: (MapQuery.Builder) -> Unit): List<E> =
     list(MapQuery.Builder().also(params).build())
+
+
+// A property extractor that uses serialization to extract a property value
+class PropertyExtractor<T, R>(private val propertyName: String) {
+    @OptIn(ExperimentalSerializationApi::class)
+    fun extract(entity: T, serializer: KSerializer<T>): R {
+        var result: Any? = null
+
+        // Create a custom encoder that captures only the specified property
+        val encoder = object : AbstractEncoder() {
+            override val serializersModule = SerializersModule {}
+
+            override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
+                return descriptor.getElementName(index) == propertyName
+            }
+
+            // Implement other encoding methods to capture primitive values
+            override fun encodeString(value: String) {
+                if (result == null) result = value
+            }
+
+            override fun encodeInt(value: Int) {
+                if (result == null) result = value
+            }
+
+            override fun encodeLong(value: Long) {
+                if (result == null) result = value
+            }
+
+            override fun encodeDouble(value: Double) {
+                if (result == null) result = value
+            }
+
+            override fun encodeBoolean(value: Boolean) {
+                if (result == null) result = value
+            }
+
+            // Add more primitive type handlers as needed
+        }
+
+        // Serialize the entity to extract the property
+        serializer.serialize(encoder, entity)
+
+        @Suppress("UNCHECKED_CAST")
+        return result as R
+    }
+}
