@@ -7,9 +7,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -48,8 +46,6 @@ inline fun <reified E: Identifiable<ID>, ID> restRepository(
                 mapValues { (_, values) -> values.map { it.toString() }  }
             ).formUrlEncode()
         }
-
-
 }
 
 inline fun <reified E : Identifiable<ID>, ID> observableRepository(

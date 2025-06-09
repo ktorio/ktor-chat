@@ -19,7 +19,7 @@ fun JoinRoomDialog(
     onClose: () -> Unit
 ) {
     var search by remember { mutableStateOf("") }
-    var selected by mutableStateOf<Room?>(null)
+    var selected by remember { mutableStateOf<Room?>(null) }
     val roomsRemote by searchRooms(search) // TODO debounce
     val coroutineScope = rememberCoroutineScope()
 
@@ -38,7 +38,7 @@ fun JoinRoomDialog(
                 RemoteLoader(roomsRemote) { allRooms ->
                     val rooms = allRooms - joinedRooms.map { it.room }
                     NavigationRail {
-                        rooms.forEachIndexed { index, room ->
+                        rooms.forEach { room ->
                             NavigationRailItem(
                                 icon = { Icon(ChatIcons.Room, contentDescription = room.name) },
                                 label = { Text(room.name) },
