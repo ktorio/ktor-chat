@@ -3,6 +3,7 @@ package io.ktor.chat
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
+import io.ktor.http.auth.parseAuthorizationHeader
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -47,6 +48,12 @@ fun Application.auth() {
                 .withIssuer(issuer)
                 .build()
             verifier(verifier)
+            authHeader { call ->
+                val authHeader = call.request.headers[HttpHeaders.Authorization]
+                    ?: call.request.queryParameters[HttpHeaders.Authorization]
+                    ?: return@authHeader null
+                runCatching { parseAuthorizationHeader(authHeader) }.getOrNull()
+            }
             validate { credential ->
                 ChatPrincipal(
                     credential["id"]?.toLongOrNull() ?: return@validate null,
@@ -71,10 +78,12 @@ fun Application.auth() {
                 val credential = call.receive<LoginRequest>()
                 val user: FullUser? = users.list { it["email"] = credential.email }.firstOrNull()
                 if (user != null && user.password == hashAlgorithm.hash(credential.password)) {
-                    call.respond(HttpStatusCode.OK, LoginResponse(
-                        token = issueToken(user),
-                        user = user
-                    ))
+                    call.respond(
+                        HttpStatusCode.OK, LoginResponse(
+                            token = issueToken(user),
+                            user = user
+                        )
+                    )
                 } else {
                     call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
                 }
@@ -141,5 +150,5 @@ fun Application.auth() {
 
 @Serializable
 data class ChatPrincipal(val user: User) {
-    constructor(id: Long, name: String): this(SimplifiedUser(id, name))
+    constructor(id: Long, name: String) : this(SimplifiedUser(id, name))
 }

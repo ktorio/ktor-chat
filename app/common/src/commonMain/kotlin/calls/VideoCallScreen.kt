@@ -19,8 +19,8 @@ fun VideoCallScreen(vm: VideoCallViewModel, chatVm: ChatViewModel) {
 
     var callMediaState by remember { mutableStateOf(CallMediaState()) }
 
-    // for now, we only display video, but audio is also recorded and sent
     val remoteVideoTracks by vm.remoteVideoTracks.collectAsState()
+    val remoteAudioTracks by vm.remoteAudioTracks.collectAsState()
     val localVideoTrack by vm.localVideoTrack.collectAsState()
 
     val connectedUsersCnt by vm.connectedUsersCount.collectAsState()
@@ -31,6 +31,11 @@ fun VideoCallScreen(vm: VideoCallViewModel, chatVm: ChatViewModel) {
         println("Connected users: $connectedUsersCnt")
         requireNotNull(selectedRoom)
         vm.setupRoomCall(this)
+    }
+
+    // Render all remote audio tracks to ensure they are played
+    remoteAudioTracks.forEach { (_, audioTrack) ->
+        AudioRenderer(audioTrack = audioTrack)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -45,46 +50,55 @@ fun VideoCallScreen(vm: VideoCallViewModel, chatVm: ChatViewModel) {
 
         // Main content area for video tracks
         Box(
-            modifier = Modifier.fillMaxSize().padding(top=50.dp, bottom = 80.dp) // Space for controls
+            modifier = Modifier.fillMaxSize().padding(top = 50.dp, bottom = 80.dp) // Space for controls
         ) {
+            val rowSize = 2
+            val padding = 5.dp
+            val cellSize = 200.dp
+
             if (remoteVideoTracks.isEmpty()) {
-                Text(
-                    text = "Waiting for others to join",
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (localVideoTrack != null) {
+                        FloatingVideoRenderer(
+                            videoTrack = localVideoTrack!!,
+                            userName = "You",
+                            modifier = Modifier
+                                .width(cellSize)
+                                .height(cellSize)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Waiting for others to join")
+                }
+
             } else {
+                val maxWidth = cellSize * rowSize + padding * (rowSize - 1)
                 // Create a responsive grid layout
                 FlowRow(
-                    modifier = Modifier.fillMaxSize().padding(8.dp),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .width(maxWidth)
+                        .align(Alignment.Center),
                     maxItemsInEachRow = 2, // Adjust based on screen size
                 ) {
-                    // Add remote video tracks
-                    remoteVideoTracks.forEach { (interlocutorName, remoteVideoTrack) ->
+                    val tracks = if (callMediaState.isCameraEnabled && localVideoTrack != null) {
+                        remoteVideoTracks + ("You" to localVideoTrack!!)
+                    } else remoteVideoTracks
+
+                    (tracks).forEach { (interlocutorName, remoteVideoTrack) ->
                         FloatingVideoRenderer(
                             videoTrack = remoteVideoTrack,
                             userName = interlocutorName,
                             modifier = Modifier
                                 .weight(1f)
-                                .width(150.dp)
-                                .height(200.dp)
-                                .padding(4.dp)
+                                .width(cellSize)
+                                .height(cellSize)
+                                .padding(padding)
                         )
-                    }
-
-                    // Add local video if available and enabled
-                    localVideoTrack?.let {
-                        if (callMediaState.isCameraEnabled) {
-                            FloatingVideoRenderer(
-                                videoTrack = it,
-                                userName = "You",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .width(150.dp)
-                                    .height(200.dp)
-                                    .padding(4.dp)
-
-                            )
-                        }
                     }
                 }
             }

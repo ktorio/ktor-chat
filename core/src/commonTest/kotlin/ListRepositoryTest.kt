@@ -12,10 +12,12 @@ class ListRepositoryTest {
         User(2L, "Donatello"),
         User(3L, "Michelangelo"),
         User(4L, "Raphael"),
+        copy = { u, id -> u.copy(id = id) }
     )
     private val messages = ListRepository(
         Message(leonardo, 1L, Clock.System.now(), "Cowabunga!"),
         Message(leonardo, 2L, Clock.System.now(), "Pizza time!"),
+        copy = { m, id -> m.copy(id = id) }
     )
 
     @Test

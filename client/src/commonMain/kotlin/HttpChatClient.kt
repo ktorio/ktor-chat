@@ -3,7 +3,7 @@ package io.ktor.chat.client
 import io.ktor.chat.*
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.sse.*
@@ -14,16 +14,18 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.*
 
+expect fun httpEngine(): HttpClientEngineFactory<*>
+
 /**
  * Implementation of ChatClient using Ktor HTTP client for chat server API.
  *
  * TODO handle unauthenticated responses
  */
 class HttpChatClient(
-    private var http: HttpClient = HttpClient(CIO).configureForChat(server = null, token = null)
+    private var http: HttpClient = HttpClient(httpEngine()).configureForChat(server = null, token = null)
 ) : ChatClient {
 
-    constructor(server: String?, token: String?) : this(HttpClient(CIO).configureForChat(server, token))
+    constructor(server: String?, token: String?) : this(HttpClient(httpEngine()).configureForChat(server, token))
 
     companion object {
         /**
@@ -39,16 +41,17 @@ class HttpChatClient(
             install(ContentNegotiation) {
                 json()
             }
-            install(WebSockets) {
-                contentConverter = KotlinxWebsocketSerializationConverter(signalingCommandsFormat)
-            }
             install(DefaultRequest) {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
                 if (server != null)
                     url(server)
-                if (token != null)
+                if (token != null) {
                     header(HttpHeaders.Authorization, "Bearer $token")
+                }
+            }
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(signalingCommandsFormat)
             }
         }
     }
@@ -64,7 +67,7 @@ class HttpChatClient(
             setBody(LoginRequest(email, password))
         }.body<LoginResponse>()
 
-        http = HttpClient(CIO).configureForChat(server, authentication.token)
+        http = HttpClient(httpEngine()).configureForChat(server, authentication.token)
         return authentication
     }
 
@@ -78,7 +81,7 @@ class HttpChatClient(
             setBody(RegistrationRequest(name, email, password))
         }.body<RegistrationResponse>()
 
-        http = HttpClient(CIO).configureForChat(server, registration.token)
+        http = HttpClient(httpEngine()).configureForChat(server, registration.token)
         return registration
     }
 
@@ -90,7 +93,7 @@ class HttpChatClient(
 
     override suspend fun logout(server: String) {
         http.post("$server/auth/logout")
-        http = HttpClient(CIO).configureForChat(server, token = null)
+        http = HttpClient(httpEngine()).configureForChat(server, token = null)
     }
 
     override suspend fun isServerAvailable(server: String): Boolean =
@@ -108,6 +111,10 @@ class HttpChatClient(
     override val rooms: Repository<Room, Long> get() = restRepository({ http }, "rooms")
     override val messages: ObservableRepository<Message, Long> get() = observableRepository({ http }, "messages")
     override val users: ReadOnlyRepository<SimplifiedUser, Long> get() = restRepository({ http }, "users")
-    override val memberships: ObservableRepository<Membership, Long> get() = observableRepository({ http }, "memberships")
+    override val memberships: ObservableRepository<Membership, Long>
+        get() = observableRepository(
+            { http },
+            "memberships"
+        )
 }
 

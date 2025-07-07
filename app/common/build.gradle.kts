@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -12,12 +12,17 @@ plugins {
 kotlin {
     jvm()
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -25,24 +30,21 @@ kotlin {
                 api(compose.foundation)
                 api(compose.material3)
                 api(compose.materialIconsExtended)
-                api(compose.uiTooling)
                 api(libs.androidx.lifecycle.viewmodel)
             }
         }
-        
+
         androidMain {
             dependencies {
                 api(compose.preview)
+                api(compose.uiTooling)
                 api(libs.androidx.activity.compose)
                 api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.savedstate)
-                api(libs.androidx.media3.common)
-                api(libs.androidx.media3.ui)
-                api(libs.androidx.media3.exoplayer)
                 api(libs.getstream.webrtc)
             }
         }
-        
+
         jvmMain {
             dependencies {
                 api(compose.desktop.currentOs)
@@ -51,7 +53,14 @@ kotlin {
                 api(libs.androidx.lifecycle.viewmodel.compose.desktop)
             }
         }
-        
+
+        wasmJsMain {
+            dependencies {
+                api(libs.androidx.lifecycle.viewmodel.compose)
+                api(libs.androidx.lifecycle.viewmodel.compose.wasm)
+            }
+        }
+
         commonTest {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {

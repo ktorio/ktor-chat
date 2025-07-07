@@ -19,8 +19,8 @@ class VideoCallViewModel(
 
     var isInVideoCall = mutableStateOf(false)
 
-    fun init(scope: CoroutineScope) {
-        signalingClient.connect(scope)
+    fun init(scope: CoroutineScope, token: String) {
+        signalingClient.connect(scope, token)
         scope.launch { listenCommandsFlow() }
     }
 

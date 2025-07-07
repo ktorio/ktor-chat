@@ -19,7 +19,7 @@ class CallSessionManagerImpl(
     private val rtcClient: WebRTCClient,
 ) : CallSessionManager {
     /** Current active room ID for the call session */
-    var roomId: Long? = null
+    private var roomId: Long? = null
 
     /** Current user information */
     override var user: User? = null

@@ -43,7 +43,6 @@ actual fun VideoRenderer(
                         }
                         it.init(eglContext, null)
                         nativeVideoTrack.addSink(it)
-                        nativeVideoTrack.state()
                     }
                 }
 

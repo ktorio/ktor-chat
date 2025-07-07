@@ -30,7 +30,7 @@ inline fun <T> load(vararg keys: Any, crossinline fetch: suspend () -> T): State
         coroutineScope.launch {
             result.value = try {
                 Done(fetch())
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
                 Error(e.message ?: "Unknown error!")
             }

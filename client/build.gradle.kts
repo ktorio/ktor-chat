@@ -1,4 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,12 +12,20 @@ plugins {
 kotlin {
     jvm()
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
+    wasmJs {
+        browser {
+            compilerOptions {
+                freeCompilerArgs.add("-Xwasm-attach-js-exception")
+                freeCompilerArgs.add("-Xwasm-debugger-custom-formatters")
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -23,21 +34,26 @@ kotlin {
                 api(libs.kotlinx.coroutines)
                 api(libs.kotlinx.datetime)
                 api(libs.ktor.client.core)
-                api(libs.ktor.client.cio)
                 api(libs.ktor.client.webrtc)
                 api(libs.ktor.client.websockets)
                 api(libs.ktor.client.content.negotiation)
                 api(libs.ktor.json)
             }
         }
-        
+
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.coroutines)
             }
         }
-        
+
+        jvmMain {
+            dependencies {
+                api(libs.ktor.client.cio)
+            }
+        }
+
         jvmTest {
             dependencies {
                 implementation(project(":server:rest"))
@@ -51,14 +67,24 @@ kotlin {
                 implementation(libs.ktor.server.content.negotiation)
             }
         }
+
+        wasmJsMain {
+            dependencies {
+                api(libs.ktor.client.js)
+            }
+        }
     }
 }
 
 android {
     namespace = "io.ktor.chat.client"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    
+
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    dependencies {
+        api(libs.ktor.client.cio)
     }
 }

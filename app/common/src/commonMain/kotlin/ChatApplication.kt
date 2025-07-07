@@ -12,8 +12,8 @@ import io.ktor.chat.vm.createViewModel
 
 @Composable
 fun ChatApplication(chatVm: ChatViewModel = createViewModel(), videoCallVm: VideoCallViewModel?) {
-    val loggedInUser by chatVm.loggedInUser
-    val confirmation by chatVm.confirmation
+    val loggedInUser by remember { chatVm.loggedInUser }
+    val confirmation by remember { chatVm.confirmation }
     val isInVideoCall by remember { videoCallVm?.isInVideoCall ?: mutableStateOf(false) }
     var screenSize by remember { chatVm.screenSize }
 
@@ -22,7 +22,7 @@ fun ChatApplication(chatVm: ChatViewModel = createViewModel(), videoCallVm: Vide
             return@LaunchedEffect
         }
         videoCallVm?.user = loggedInUser
-        videoCallVm?.init(this)
+        videoCallVm?.init(this, chatVm.token.value!!)
     }
 
     Layout(

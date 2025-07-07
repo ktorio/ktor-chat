@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopStart
@@ -182,7 +183,9 @@ private fun MessagesView(
     onVideoCallInitiated: (suspend () -> Unit)?
 ) {
     if (selectedRoom == null) {
-        Text("Select a room to begin")
+        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().windowInsetsPadding(WindowInsets.safeDrawing)) {
+            Text(modifier = Modifier.align(Alignment.Center), text = "Select a room to begin")
+        }
         return
     }
 

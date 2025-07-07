@@ -53,7 +53,7 @@ class SessionManager(
             }
 
             if (!roomsInCall.contains(roomId)) continue
-            _signalingCommands.tryEmit(SignalingEvent(command = OngoingCall(roomId), recipientId = client.id))
+            _signalingCommands.emit(SignalingEvent(command = OngoingCall(roomId), recipientId = client.id))
         }
     }
 
@@ -77,7 +77,7 @@ class SessionManager(
         return sessionManagerScope.launch {
             for (recipientId in allClients) {
                 if (recipientId == senderId) continue
-                _signalingCommands.tryEmit(SignalingEvent(command, recipientId))
+                _signalingCommands.emit(SignalingEvent(command, recipientId))
             }
         }
     }
@@ -90,7 +90,7 @@ class SessionManager(
             "Client $recipientId is not in room ${command.roomId}"
         }
         sessionManagerScope.launch {
-            _signalingCommands.tryEmit(SignalingEvent(command, recipientId))
+            _signalingCommands.emit(SignalingEvent(command, recipientId))
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.ktor.chat.*
 import io.ktor.chat.client.ChatClient
+import io.ktor.chat.client.serverHost
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -33,7 +34,7 @@ actual fun createViewModel(chatClient: ChatClient?): ChatViewModel {
         null
     }
     return viewModel {
-        val server = stored?.server ?: "http://localhost:8080"
+        val server = stored?.server ?: "http://${serverHost}:8080"
         if (chatClient != null) {
             ChatViewModel(
                 server,

@@ -34,7 +34,7 @@ interface ChatRestClient {
 interface SignalingClient {
     val signalingCommandFlow: SharedFlow<SignalingCommand>
 
-    fun connect(scope: CoroutineScope): Job
+    fun connect(scope: CoroutineScope, token: String): Job
     suspend fun sendCommand(command: SignalingCommand)
 }
 

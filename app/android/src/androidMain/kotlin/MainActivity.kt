@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import io.ktor.chat.calls.EglBaseProvider
 import io.ktor.chat.client.HttpChatClient
 import io.ktor.chat.client.HttpSignalingClient
+import io.ktor.chat.client.serverHost
 import io.ktor.chat.vm.VideoCallViewModel
 import io.ktor.chat.vm.createViewModel
 import io.ktor.client.HttpClient
@@ -29,10 +30,10 @@ fun createVideoCallVm(ctx: Context, http: () -> HttpClient): VideoCallViewModel 
 
     val rtcClient = WebRTCClient(AndroidWebRTC) {
         iceServers = listOf(WebRTC.IceServer(urls = "stun:stun.l.google.com:19302", username = "", credential = ""))
-        turnServers = listOf(WebRTC.IceServer(urls = "turn:10.0.2.2:3478", username = "user", credential = "pass"))
+        turnServers = listOf(WebRTC.IceServer(urls = "turn:${serverHost}:3478", username = "user", credential = "pass"))
         statsRefreshRate = 10_000
         remoteTracksReplay = 10
-        mediaTrackFactory = AndroidMediaDevices(ctx,egbBase)
+        mediaTrackFactory = AndroidMediaDevices(ctx, egbBase)
     }
 
     return VideoCallViewModel(rtcClient, HttpSignalingClient(http))

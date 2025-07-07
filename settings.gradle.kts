@@ -6,15 +6,17 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
     }
 }
 
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenLocal()
         mavenCentral()
+        mavenLocal()
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
     }
 }
 
@@ -26,6 +28,7 @@ include(":app")
 include(":app:common")
 include(":app:android")
 include(":app:desktop")
+include(":app:wasmJs")
 include(":server")
 include(":server:common")
 include(":server:rest")

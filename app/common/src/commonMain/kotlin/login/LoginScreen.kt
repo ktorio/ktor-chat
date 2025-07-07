@@ -29,7 +29,7 @@ fun LoginScreen(vm: ChatViewModel) {
     var password by remember { mutableStateOf("") }
     var passwordRepeat by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    var loadingState = remember { mutableStateOf(false) }
+    val loadingState = remember { mutableStateOf(false) }
     var loading by loadingState
     var tabIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
@@ -68,10 +68,10 @@ fun LoginScreen(vm: ChatViewModel) {
     
     WelcomeView {
         FormColumn {
-            TabRow(selectedTabIndex = tabIndex) {
+            SecondaryTabRow(selectedTabIndex = tabIndex, tabs = {
                 Tab(text = { Text("Login") }, selected = tabIndex == 0, onClick = { tabIndex = 0 })
                 Tab(text = { Text("Register") }, selected = tabIndex == 1, onClick = { tabIndex = 1 })
-            }
+            })
             Column(
                 Modifier.fillMaxWidth().height(225.dp).verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(24.dp)

@@ -17,7 +17,7 @@ class ChatViewModel(
         server = server,
         token = token,
     )
-): ViewModel(), ServerStatusClient by client, ChatRestClient by client {
+) : ViewModel(), ServerStatusClient by client, ChatRestClient by client {
     val server = mutableStateOf(server)
     val token = mutableStateOf(token)
     val loggedInUser = mutableStateOf(loggedInUser)
@@ -39,7 +39,6 @@ class ChatViewModel(
 
     suspend fun login(server: String, email: String, password: String) {
         val authentication = client.login(server, email, password)
-
         this.server.value = server
         this.token.value = authentication.token
         this.loggedInUser.value = authentication.user
@@ -69,7 +68,7 @@ class ChatViewModel(
 }
 
 sealed interface Confirmation {
-    data object Unauthenticated: Confirmation
-    data class Pending(val code: String): Confirmation
-    data object Confirmed: Confirmation
+    data object Unauthenticated : Confirmation
+    data class Pending(val code: String) : Confirmation
+    data object Confirmed : Confirmation
 }

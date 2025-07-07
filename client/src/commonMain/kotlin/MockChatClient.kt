@@ -8,7 +8,7 @@ import kotlinx.datetime.minus
 class MockChatClient(
     rootUser: FullUser = FullUser("Steve", "steve@mail.com", "kek"),
     lobby: Room = Room("lobby", id = 1)
-): ChatClient {
+) : ChatClient {
     override suspend fun verify(): Boolean = true
 
     override suspend fun login(server: String, email: String, password: String): LoginResponse =
@@ -16,9 +16,14 @@ class MockChatClient(
             it.email == email && it.password == password
         }?.let {
             LoginResponse("abc123def456", it)
-        } ?: throw IllegalAccessException()
+        } ?: error("User not found")
 
-    override suspend fun register(server: String, email: String, name: String, password: String): RegistrationResponse {
+    override suspend fun register(
+        server: String,
+        email: String,
+        name: String,
+        password: String
+    ): RegistrationResponse {
         val user = FullUser(name, email, password)
         users.create(user)
         return RegistrationResponse("abc123def456", user, "123456")
@@ -35,10 +40,11 @@ class MockChatClient(
     }
 
     override val users = ListRepository(
-        rootUser
+        rootUser,
+        copy = { u, id -> u.copy(id = id) }
     )
 
-    override val rooms = ListRepository(lobby)
+    override val rooms = ListRepository(lobby, copy = { r, id -> r.copy(id = id) })
     override val messages = ListRepository(
         Message(
             author = rootUser,
@@ -46,7 +52,9 @@ class MockChatClient(
             created = Clock.System.now()
                 .minus(42, DateTimeUnit.SECOND),
             text = "Hello, World!"
-        )
+        ),
+        copy = { m, id -> m.copy(id = id) }
     ).observable()
-    override val memberships: ObservableRepository<Membership, Long> = ListRepository<Membership>().observable()
+    override val memberships: ObservableRepository<Membership, Long> =
+        ListRepository<Membership>(copy = { m, id -> m.copy(id = id) }).observable()
 }
