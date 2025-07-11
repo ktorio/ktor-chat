@@ -1,7 +1,0 @@
-jwt:
-  audience: audience
-  issuer: issuer
-  realm: realm
-
-security:
-  secret: S3crE4_P@55w0Rd
