@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import io.ktor.client.webrtc.WebRTCMedia
+import io.ktor.client.webrtc.WebRtcMedia
 
 /**
  * JVM implementation of VideoRenderer.
@@ -21,7 +21,7 @@ import io.ktor.client.webrtc.WebRTCMedia
  */
 @Composable
 actual fun VideoRenderer(
-    videoTrack: WebRTCMedia.VideoTrack,
+    videoTrack: WebRtcMedia.VideoTrack,
     modifier: Modifier
 ) {
     Box(

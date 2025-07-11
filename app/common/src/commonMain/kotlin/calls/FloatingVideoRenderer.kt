@@ -28,7 +28,7 @@ import io.ktor.client.webrtc.*
  */
 @Composable
 fun FloatingVideoRenderer(
-    videoTrack: WebRTCMedia.VideoTrack,
+    videoTrack: WebRtcMedia.VideoTrack,
     modifier: Modifier = Modifier,
     userName: String = "",
 ) {

@@ -7,9 +7,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.ktor.client.webrtc.*
+import io.ktor.client.webrtc.media.*
 import org.webrtc.EglBase
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
+import org.webrtc.VideoTrack
 
 object EglBaseProvider {
     var eglBase: EglBase? = null
@@ -24,36 +26,34 @@ object EglBaseProvider {
  */
 @Composable
 actual fun VideoRenderer(
-    videoTrack: WebRTCMedia.VideoTrack,
+    videoTrack: WebRtcMedia.VideoTrack,
     modifier: Modifier
 ) {
-    // Get the native android video track from WebRTCMedia.VideoTrack
+    // Get the native android video track from WebRtcMedia.VideoTrack
     val nativeVideoTrack by remember(videoTrack) {
-        mutableStateOf(videoTrack.getNative() as org.webrtc.VideoTrack)
+        mutableStateOf(videoTrack.getNative() as VideoTrack)
     }
     var renderer by remember { mutableStateOf<SurfaceViewRenderer?>(null) }
 
     val lifecycleEventObserver = remember(renderer, videoTrack) {
         LifecycleEventObserver { _, event ->
+            val r = renderer ?: return@LifecycleEventObserver
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    renderer?.also {
-                        val eglContext = requireNotNull(EglBaseProvider.eglBase?.eglBaseContext) {
-                            "EglBase is not initialized"
-                        }
-                        it.init(eglContext, null)
-                        nativeVideoTrack.addSink(it)
+                    val eglContext = requireNotNull(EglBaseProvider.eglBase?.eglBaseContext) {
+                        "EglBase is not initialized"
                     }
+                    r.init(eglContext, null)
+                    nativeVideoTrack.addSink(r)
+                    nativeVideoTrack.state()
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {
-                    renderer?.also { nativeVideoTrack.removeSink(it) }
-                    renderer?.release()
+                    nativeVideoTrack.removeSink(r)
+                    r.release()
                 }
 
-                else -> {
-                    // ignore other events
-                }
+                else -> null  // ignore other events
             }
         }
     }
@@ -63,8 +63,10 @@ actual fun VideoRenderer(
         lifecycle.addObserver(lifecycleEventObserver)
 
         onDispose {
-            renderer?.let { nativeVideoTrack.removeSink(it) }
-            renderer?.release()
+            renderer?.let { r ->
+                nativeVideoTrack.removeSink(r)
+                r.release()
+            }
             lifecycle.removeObserver(lifecycleEventObserver)
         }
     }

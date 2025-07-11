@@ -1,7 +1,7 @@
 package io.ktor.chat.client
 
 import io.ktor.chat.*
-import io.ktor.client.webrtc.WebRTCMedia
+import io.ktor.client.webrtc.WebRtcMedia
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharedFlow
@@ -44,11 +44,11 @@ interface CallSessionManager {
     val callRequests: SharedFlow<JoinCall>
     val connectedUsersCount: StateFlow<Int>
 
-    val localAudioTrack: StateFlow<WebRTCMedia.AudioTrack?>
-    val localVideoTrack: StateFlow<WebRTCMedia.VideoTrack?>
+    val localAudioTrack: StateFlow<WebRtcMedia.AudioTrack?>
+    val localVideoTrack: StateFlow<WebRtcMedia.VideoTrack?>
 
-    val remoteAudioTracks: StateFlow<Map<String, WebRTCMedia.AudioTrack>>
-    val remoteVideoTracks: StateFlow<Map<String, WebRTCMedia.VideoTrack>>
+    val remoteAudioTracks: StateFlow<Map<String, WebRtcMedia.AudioTrack>>
+    val remoteVideoTracks: StateFlow<Map<String, WebRtcMedia.VideoTrack>>
 
     fun setupRoomCall(scope: CoroutineScope)
     suspend fun listenCommandsFlow()

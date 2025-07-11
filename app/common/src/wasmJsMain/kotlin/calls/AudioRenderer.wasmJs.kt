@@ -1,6 +1,7 @@
 package io.ktor.chat.calls
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import io.ktor.client.webrtc.*
 import kotlinx.browser.document
 import org.w3c.dom.HTMLAudioElement
@@ -14,11 +15,10 @@ import org.w3c.dom.mediacapture.MediaStream
  */
 @Composable
 actual fun AudioRenderer(
-    audioTrack: WebRTCMedia.AudioTrack
+    audioTrack: WebRtcMedia.AudioTrack
 ) {
     fun getStream(): MediaStream {
-        val track = (audioTrack as WasmJsAudioTrack).nativeTrack
-        return MediaStream().apply { addTrack(track) }
+        return MediaStream().apply { addTrack(audioTrack.getNative()) }
     }
 
     // Create an audio element and play the audio track

@@ -3,8 +3,7 @@ package io.ktor.chat.calls
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.viewinterop.WebElementView
-import io.ktor.client.webrtc.WasmJsVideoTrack
-import io.ktor.client.webrtc.WebRTCMedia
+import io.ktor.client.webrtc.*
 import kotlinx.browser.document
 import org.w3c.dom.HTMLVideoElement
 import org.w3c.dom.mediacapture.MediaStream
@@ -12,12 +11,11 @@ import org.w3c.dom.mediacapture.MediaStream
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun VideoRenderer(
-    videoTrack: WebRTCMedia.VideoTrack,
+    videoTrack: WebRtcMedia.VideoTrack,
     modifier: androidx.compose.ui.Modifier
 ) {
     fun getStream(): MediaStream {
-        val track = (videoTrack as WasmJsVideoTrack).nativeTrack
-        return MediaStream().apply { addTrack(track) }
+        return MediaStream().apply { addTrack(videoTrack.getNative()) }
     }
 
     WebElementView(

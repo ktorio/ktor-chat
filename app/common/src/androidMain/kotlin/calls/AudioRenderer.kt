@@ -2,7 +2,7 @@ package io.ktor.chat.calls
 
 import androidx.compose.runtime.*
 import io.ktor.client.webrtc.*
-import org.webrtc.AudioTrack
+import io.ktor.client.webrtc.media.getNative
 
 /**
  * Android implementation of AudioRenderer.
@@ -12,21 +12,23 @@ import org.webrtc.AudioTrack
  */
 @Composable
 actual fun AudioRenderer(
-    audioTrack: WebRTCMedia.AudioTrack
+    audioTrack: WebRtcMedia.AudioTrack
 ) {
-    // Get the native android audio track from WebRTCMedia.AudioTrack
+    // Get the native android audio track from WebRtcMedia.AudioTrack
     val nativeAudioTrack by remember(audioTrack) {
-        mutableStateOf(audioTrack.getNative() as AudioTrack)
+        mutableStateOf(audioTrack.getNative())
     }
 
-    // Set the audio track to enabled to play it
+    // Set the audio track to enable to play it
     DisposableEffect(nativeAudioTrack) {
         nativeAudioTrack.setEnabled(true)
         println("Audio track enabled: ${nativeAudioTrack.id()}")
         
         onDispose {
+            if (nativeAudioTrack.isDisposed) {
+                return@onDispose
+            }
             nativeAudioTrack.setEnabled(false)
-            println("Audio track disabled: ${nativeAudioTrack.id()}")
         }
     }
 }

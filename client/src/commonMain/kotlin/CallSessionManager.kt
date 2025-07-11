@@ -16,7 +16,7 @@ import kotlinx.coroutines.sync.withLock
  */
 class CallSessionManagerImpl(
     private val signalingClient: SignalingClient,
-    private val rtcClient: WebRTCClient,
+    private val rtcClient: WebRtcClient,
 ) : CallSessionManager {
     /** Current active room ID for the call session */
     private var roomId: Long? = null
@@ -33,22 +33,22 @@ class CallSessionManagerImpl(
     override val connectedUsersCount: StateFlow<Int> = connectedUsersCountFlow.asStateFlow()
 
     /** Flow for local video track */
-    private val localVideoTrackFlow = MutableStateFlow<WebRTCMedia.VideoTrack?>(null)
+    private val localVideoTrackFlow = MutableStateFlow<WebRtcMedia.VideoTrack?>(null)
     override val localVideoTrack = localVideoTrackFlow.asStateFlow()
 
     /** Flow for remote video tracks mapped by username */
-    private val remoteVideoTracksFlow = MutableStateFlow<Map<String, WebRTCMedia.VideoTrack>>(mapOf())
+    private val remoteVideoTracksFlow = MutableStateFlow<Map<String, WebRtcMedia.VideoTrack>>(mapOf())
     override val remoteVideoTracks = remoteVideoTracksFlow.asStateFlow()
 
     /** Flow for remote audio tracks mapped by username */
-    private val remoteAudioTracksFlow = MutableStateFlow<Map<String, WebRTCMedia.AudioTrack>>(mapOf())
+    private val remoteAudioTracksFlow = MutableStateFlow<Map<String, WebRtcMedia.AudioTrack>>(mapOf())
     override val remoteAudioTracks = remoteAudioTracksFlow.asStateFlow()
 
     /** Mutex to ensure thread-safe initialization of media tracks */
     private val initCallMutex = Mutex()
 
     /** Flow for local audio track */
-    private val localAudioTrackFlow = MutableStateFlow<WebRTCMedia.AudioTrack?>(null)
+    private val localAudioTrackFlow = MutableStateFlow<WebRtcMedia.AudioTrack?>(null)
     override val localAudioTrack = localAudioTrackFlow.asStateFlow()
 
     /** Maps user ID to peer connection manager for active connections */
@@ -66,15 +66,15 @@ class CallSessionManagerImpl(
             return
         }
 
-        val audioConstraints = WebRTCMedia.AudioTrackConstraints(
+        val audioConstraints = WebRtcMedia.AudioTrackConstraints(
             echoCancellation = true,
             noiseSuppression = true
         )
-        val videoConstraints = WebRTCMedia.VideoTrackConstraints(
+        val videoConstraints = WebRtcMedia.VideoTrackConstraints(
             width = 1280,
             height = 720,
             frameRate = 30,
-            facingMode = WebRTCMedia.FacingMode.USER,
+            facingMode = WebRtcMedia.FacingMode.USER,
         )
 
         // Create and emit the audio track

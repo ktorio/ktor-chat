@@ -7,12 +7,12 @@ import io.ktor.chat.Reconnect
 import io.ktor.chat.client.CallSessionManager
 import io.ktor.chat.client.CallSessionManagerImpl
 import io.ktor.chat.client.SignalingClient
-import io.ktor.client.webrtc.WebRTCClient
+import io.ktor.client.webrtc.WebRtcClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class VideoCallViewModel(
-    rtcClient: WebRTCClient,
+    rtcClient: WebRtcClient,
     val signalingClient: SignalingClient,
     private val callSessionManager: CallSessionManager = CallSessionManagerImpl(signalingClient, rtcClient)
 ) : ViewModel(), CallSessionManager by callSessionManager {

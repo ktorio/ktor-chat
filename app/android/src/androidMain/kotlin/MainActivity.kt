@@ -11,28 +11,32 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
-import io.ktor.chat.calls.EglBaseProvider
-import io.ktor.chat.client.HttpChatClient
-import io.ktor.chat.client.HttpSignalingClient
-import io.ktor.chat.client.serverHost
-import io.ktor.chat.vm.VideoCallViewModel
-import io.ktor.chat.vm.createViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.webrtc.WebRTC
-import io.ktor.client.webrtc.WebRTCClient
-import io.ktor.client.webrtc.engine.AndroidMediaDevices
-import io.ktor.client.webrtc.engine.AndroidWebRTC
+import io.ktor.chat.app.*
+import io.ktor.chat.calls.*
+import io.ktor.chat.client.*
+import io.ktor.chat.vm.*
+import io.ktor.client.*
+import io.ktor.client.webrtc.*
+import io.ktor.client.webrtc.media.*
 import org.webrtc.EglBase
 
 fun createVideoCallVm(ctx: Context, http: () -> HttpClient): VideoCallViewModel {
     val egbBase = EglBase.create()
     EglBaseProvider.eglBase = egbBase
 
-    val rtcClient = WebRTCClient(AndroidWebRTC) {
-        iceServers = listOf(WebRTC.IceServer(urls = "stun:stun.l.google.com:19302", username = "", credential = ""))
-        turnServers = listOf(WebRTC.IceServer(urls = "turn:${serverHost}:3478", username = "user", credential = "pass"))
-        statsRefreshRate = 10_000
-        remoteTracksReplay = 10
+    val rtcClient = WebRtcClient(AndroidWebRtc) {
+        defaultConnectionConfig = {
+            iceServers = joinIceServers(
+                BuildKonfig.STUN_URL,
+                BuildKonfig.STUN_USERNAME,
+                BuildKonfig.STUN_CREDENTIAL,
+                BuildKonfig.TURN_URL,
+                BuildKonfig.TURN_USERNAME,
+                BuildKonfig.TURN_CREDENTIAL
+            )
+            statsRefreshRate = 10_000
+            remoteTracksReplay = 10
+        }
         mediaTrackFactory = AndroidMediaDevices(ctx, egbBase)
     }
 
@@ -42,8 +46,7 @@ fun createVideoCallVm(ctx: Context, http: () -> HttpClient): VideoCallViewModel 
 class MainActivity : ComponentActivity() {
     // Required permissions for video calls
     private val requiredPermissions = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.RECORD_AUDIO
+        Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO
     )
 
     // State to track if permissions are granted

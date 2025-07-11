@@ -37,9 +37,9 @@ class PeerConnectionManager(
     /** Client for sending signaling messages */
     private val signalingClient: SignalingClient,
     /** Function to update the remote video track collection */
-    private val updateRemoteVideoTracks: UpdateTrackFn<WebRTCMedia.VideoTrack>,
+    private val updateRemoteVideoTracks: UpdateTrackFn<WebRtcMedia.VideoTrack>,
     /** Function to update the remote audio track collection */
-    private val updateRemoteAudioTracks: UpdateTrackFn<WebRTCMedia.AudioTrack>,
+    private val updateRemoteAudioTracks: UpdateTrackFn<WebRtcMedia.AudioTrack>,
 ) {
     private val pendingIceMutex = Mutex()
 
@@ -47,33 +47,33 @@ class PeerConnectionManager(
      * Buffer to store ICE candidates that arrive before the remote description is set
      * These will be applied once the remote description becomes available
      */
-    private val pendingIceCandidates = mutableListOf<WebRTC.IceCandidate>()
+    private val pendingIceCandidates = mutableListOf<WebRtc.IceCandidate>()
 
     /**
      * Listens for incoming media tracks from the remote peer
      */
-    private suspend fun listenForTracks(): Unit = peerConnection.remoteTracksFlow.collect { operation ->
-        println("Track update from ${interlocutor.name}: ${operation.item.kind}")
-        when (operation) {
-            is Add -> {
-                when (val track = operation.item) {
-                    is WebRTCMedia.VideoTrack -> updateRemoteVideoTracks {
+    private suspend fun listenForTracks(): Unit = peerConnection.trackEvents.collect { event ->
+        println("Track update from ${interlocutor.name}: ${event.track.kind}")
+        when (event) {
+            is TrackEvent.Add -> {
+                when (val track = event.track) {
+                    is WebRtcMedia.VideoTrack -> updateRemoteVideoTracks {
                         it.toMutableMap().apply { put(interlocutor.name, track) }
                     }
 
-                    is WebRTCMedia.AudioTrack -> updateRemoteAudioTracks {
+                    is WebRtcMedia.AudioTrack -> updateRemoteAudioTracks {
                         it.toMutableMap().apply { put(interlocutor.name, track) }
                     }
                 }
             }
 
-            is Remove -> {
-                when (val track = operation.item) {
-                    is WebRTCMedia.VideoTrack -> updateRemoteVideoTracks {
+            is TrackEvent.Remove -> {
+                when (val track = event.track) {
+                    is WebRtcMedia.VideoTrack -> updateRemoteVideoTracks {
                         it.filter { e -> e.key != interlocutor.name && e.value.id != track.id }
                     }
 
-                    is WebRTCMedia.AudioTrack -> updateRemoteAudioTracks {
+                    is WebRtcMedia.AudioTrack -> updateRemoteAudioTracks {
                         it.filter { e -> e.key != interlocutor.name && e.value.id != track.id }
                     }
                 }
@@ -85,7 +85,7 @@ class PeerConnectionManager(
      * Listens for locally generated ICE candidates and sends them to the remote peer
      * ICE candidates represent possible network paths for connection
      */
-    private suspend fun listenForIce(): Unit = peerConnection.iceCandidateFlow.collect {
+    private suspend fun listenForIce(): Unit = peerConnection.iceCandidates.collect {
         println("[ICE] Sending ICE candidate to ${interlocutor.name}: $it")
         // Format the candidate as a string with separators for transmission
         val message = "${it.sdpMLineIndex}$ICE_SEPARATOR${it.sdpMid}$ICE_SEPARATOR${it.candidate}"
@@ -101,39 +101,40 @@ class PeerConnectionManager(
     fun setupListeners(scope: CoroutineScope) {
         // Monitor connection statistics for debugging
         scope.launch {
-            peerConnection.statsFlow.collect { println("Stats for ${interlocutor.name}: $it") }
+            peerConnection.stats.collect { println("Stats for ${interlocutor.name}: $it") }
         }
         scope.launch {
-            peerConnection.iceConnectionStateFlow.collect { println("ICE connection state for ${interlocutor.name}: $it") }
+            peerConnection.iceConnectionState.collect { println("ICE connection state for ${interlocutor.name}: $it") }
         }
         scope.launch {
-            peerConnection.signalingStateFlow.collect { println("Signaling state for ${interlocutor.name}: $it") }
+            peerConnection.signalingState.collect { println("Signaling state for ${interlocutor.name}: $it") }
         }
         scope.launch {
-            peerConnection.iceGatheringStateFlow.collect { println("ICE gathering state for ${interlocutor.name}: $it") }
+            peerConnection.iceGatheringState.collect { println("ICE gathering state for ${interlocutor.name}: $it") }
         }
         scope.launch {
-            peerConnection.connectionStateFlow.collect {
+            peerConnection.state.collect {
                 println("Connection state for ${interlocutor.name}: $it")
                 // If the connection fails, and we're the initiator, restart ICE
-                if (it == WebRTC.ConnectionState.FAILED && isInitiator) {
+                if (it == WebRtc.ConnectionState.FAILED && isInitiator) {
                     peerConnection.restartIce() // will trigger onnegotiationneeded event
                 }
             }
         }
+        scope.launch {
+            // When renegotiation is needed (adding/removing tracks, ICE restart)
+            peerConnection.negotiationNeeded.collect {
+                sendOffer() // renegotiate
+            }
+        }
         scope.launch { listenForTracks() }
         scope.launch { listenForIce() }
-
-        // When renegotiation is needed (adding/removing tracks, ICE restart)
-        peerConnection.onNegotiationNeeded {
-            scope.launch { sendOffer() } // renegotiate
-        }
     }
 
     /**
      * Sets the remote session description and applies any pending ICE candidates
      */
-    private suspend fun setRemoteDescription(description: WebRTC.SessionDescription) {
+    private suspend fun setRemoteDescription(description: WebRtc.SessionDescription) {
         println("[SDP] Setting remote description for ${interlocutor.name}: $description")
         pendingIceMutex.withLock {
             // Set the remote description (SDP) received from the other peer
@@ -168,7 +169,7 @@ class PeerConnectionManager(
     suspend fun handleOffer(sdpOffer: String) {
         require(!isInitiator) { "Only non-initiator can handle offer" }
         // Create a session description from the offer string
-        val offer = WebRTC.SessionDescription(WebRTC.SessionDescriptionType.OFFER, sdpOffer)
+        val offer = WebRtc.SessionDescription(WebRtc.SessionDescriptionType.OFFER, sdpOffer)
         println("[SDP] Set remote description from ${interlocutor.name}: $offer")
         setRemoteDescription(offer)
 
@@ -186,7 +187,7 @@ class PeerConnectionManager(
      */
     suspend fun handleAnswer(sdpAnswer: String) {
         require(isInitiator) { "Only initiator can handle answer" }
-        val answer = WebRTC.SessionDescription(WebRTC.SessionDescriptionType.ANSWER, sdp = sdpAnswer)
+        val answer = WebRtc.SessionDescription(WebRtc.SessionDescriptionType.ANSWER, sdp = sdpAnswer)
         setRemoteDescription(answer)
     }
 
@@ -196,7 +197,7 @@ class PeerConnectionManager(
     suspend fun handleIce(candidate: String) {
         // Parse the serialized candidate string back into components
         val iceArray = candidate.split(ICE_SEPARATOR)
-        val iceCandidate = WebRTC.IceCandidate(
+        val iceCandidate = WebRtc.IceCandidate(
             sdpMLineIndex = iceArray[0].toInt(),
             sdpMid = iceArray[1],
             candidate = iceArray[2]
