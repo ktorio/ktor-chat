@@ -3,9 +3,7 @@
 A full-stack example application using:
 - Ktor Server / Client
 - Compose Multi-platform
-- Amper
 - Exposed 
-- Koin
 
 The features presented in the application include:
 - Real-time messaging
