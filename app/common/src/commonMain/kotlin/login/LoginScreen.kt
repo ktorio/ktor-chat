@@ -68,6 +68,7 @@ fun LoginScreen(vm: ChatViewModel) {
     
     WelcomeView {
         FormColumn {
+            @OptIn(ExperimentalMaterial3Api::class)
             SecondaryTabRow(selectedTabIndex = tabIndex, tabs = {
                 Tab(text = { Text("Login") }, selected = tabIndex == 0, onClick = { tabIndex = 0 })
                 Tab(text = { Text("Register") }, selected = tabIndex == 1, onClick = { tabIndex = 1 })
