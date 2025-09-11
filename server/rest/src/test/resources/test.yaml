@@ -1,0 +1,5 @@
+ktor:
+  application:
+    dependencies:
+      - io.ktor.chat.MocksKt.userRepository
+      - io.ktor.chat.MocksKt.messagesRepository

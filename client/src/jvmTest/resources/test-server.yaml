@@ -1,0 +1,30 @@
+ktor:
+    application:
+        modules:
+            - io.ktor.chat.LoggingKt.logging
+            - io.ktor.chat.SecurityKt.security
+            - io.ktor.chat.MailKt.mail
+            - io.ktor.chat.RestKt.rest
+            - io.ktor.chat.HealthCheckKt.healthCheck
+            - io.ktor.chat.DatabasesKt.database
+            - io.ktor.chat.RepositoriesKt.repositories
+            - io.ktor.chat.AuthenticationKt.auth
+            - io.ktor.chat.UsersKt.users
+            - io.ktor.chat.MessagesKt.messages
+            - io.ktor.chat.RoomsKt.rooms
+            - io.ktor.chat.MembershipsKt.members
+
+jwt:
+    audience: audience
+    issuer: issuer
+    realm: realm
+
+security:
+    secret: S3crE4_P@55w0Rd
+
+database:
+    test:
+        url: "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+        user: root
+        driver: org.h2.Driver
+        password: ""

@@ -1,32 +1,37 @@
 rootProject.name = "ktor-chat"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        mavenCentral()
         google()
+        mavenCentral()
         gradlePluginPortal()
-        maven("https://packages.jetbrains.team/maven/p/amper/amper")
-        maven("https://www.jetbrains.com/intellij-repository/releases")
-        maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
     }
 }
 
 plugins {
-    id("org.jetbrains.amper.settings.plugin").version("0.5.0-dev-2035")
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":core")
-
-include(":db")
-include(":client")
-
+include(":app")
+include(":app:common")
+include(":app:android")
+include(":app:desktop")
+include(":app:wasmJs")
 include(":server")
 include(":server:common")
 include(":server:rest")
 include(":server:admin")
-
-
-include(":app")
-include(":app:common")
-include(":app:desktop")
-include(":app:android")
+include(":core")
+include(":client")
+include(":db")
