@@ -7,8 +7,11 @@ import io.ktor.chat.client.*
 import io.ktor.chat.vm.*
 import io.ktor.client.*
 import io.ktor.client.webrtc.*
+import io.ktor.utils.io.ExperimentalKtorApi
 import kotlinx.browser.document
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalKtorApi::class)
 fun createVideoCallVm(http: () -> HttpClient): VideoCallViewModel {
     val rtcClient = WebRtcClient(JsWebRtc) {
         defaultConnectionConfig = {
@@ -20,7 +23,7 @@ fun createVideoCallVm(http: () -> HttpClient): VideoCallViewModel {
                 BuildKonfig.TURN_USERNAME,
                 BuildKonfig.TURN_CREDENTIAL
             )
-            statsRefreshRate = 10_000
+            statsRefreshRate = 10.seconds
             remoteTracksReplay = 50
             iceCandidatesReplay = 50
         }

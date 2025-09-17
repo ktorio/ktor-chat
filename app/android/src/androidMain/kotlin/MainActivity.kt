@@ -18,8 +18,11 @@ import io.ktor.chat.vm.*
 import io.ktor.client.*
 import io.ktor.client.webrtc.*
 import io.ktor.client.webrtc.media.*
+import io.ktor.utils.io.ExperimentalKtorApi
 import org.webrtc.EglBase
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalKtorApi::class)
 fun createVideoCallVm(ctx: Context, http: () -> HttpClient): VideoCallViewModel {
     val egbBase = EglBase.create()
     EglBaseProvider.eglBase = egbBase
@@ -34,7 +37,7 @@ fun createVideoCallVm(ctx: Context, http: () -> HttpClient): VideoCallViewModel 
                 BuildKonfig.TURN_USERNAME,
                 BuildKonfig.TURN_CREDENTIAL
             )
-            statsRefreshRate = 10_000
+            statsRefreshRate = 10.seconds
             remoteTracksReplay = 10
         }
         mediaTrackFactory = AndroidMediaDevices(ctx, egbBase)

@@ -2,6 +2,7 @@ package io.ktor.chat.client
 
 import io.ktor.chat.*
 import io.ktor.client.webrtc.*
+import io.ktor.utils.io.ExperimentalKtorApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -14,6 +15,7 @@ import kotlinx.coroutines.sync.withLock
  * @param signalingClient Client for sending and receiving WebRTC signaling messages
  * @param rtcClient Client for managing WebRTC connections and media
  */
+@OptIn(ExperimentalKtorApi::class)
 class CallSessionManagerImpl(
     private val signalingClient: SignalingClient,
     private val rtcClient: WebRtcClient,

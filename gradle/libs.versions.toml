@@ -1,17 +1,16 @@
 [versions]
 agp = "8.11.2"
-android-compileSdk = "35"
+android-compileSdk = "36"
 android-minSdk = "30"
-android-targetSdk = "35"
+android-targetSdk = "36"
 androidx-activity = "1.11.0"
-androidx-media = "1.8.0"
 android-webrtc = "1.3.10"
 build-konfig = "0.17.1"
-composeHotReload = "1.0.0-beta06"
-composeMultiplatform = "1.9.0-rc01"
+composeHotReload = "1.0.0-beta07"
+composeMultiplatform = "1.9.0"
 kotlin = "2.2.20"
 ktor = "3.3.0"
-ktor-plugin = "3.2.3"
+ktor-plugin = "3.3.0"
 logback = "1.5.18"
 exposed = "0.61.0"
 h2 = "2.3.232"
@@ -59,9 +58,6 @@ androidx-lifecycle-viewmodel-compose-desktop = { module = "org.jetbrains.android
 androidx-lifecycle-viewmodel-compose-wasm = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-wasm-js", version.ref = "android-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "android-lifecycle" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-media3-common = { module = "androidx.media3:media3-common", version.ref = "androidx-media" }
-androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "androidx-media" }
-androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "androidx-media" }
 getstream-webrtc = { module = "io.getstream:stream-webrtc-android", version.ref = "android-webrtc" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
