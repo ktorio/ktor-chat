@@ -59,6 +59,7 @@ kotlin {
 
         wasmJsMain {
             dependencies {
+                api(kotlinWrappers.browser)
                 api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.compose.wasm)
             }

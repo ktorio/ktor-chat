@@ -3,9 +3,9 @@ package io.ktor.chat.calls
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import io.ktor.client.webrtc.*
-import kotlinx.browser.document
-import org.w3c.dom.HTMLAudioElement
-import org.w3c.dom.mediacapture.MediaStream
+import web.dom.document
+import web.html.HTMLAudioElement
+import web.mediastreams.MediaStream
 
 /**
  * WasmJs implementation of AudioRenderer.
@@ -26,12 +26,12 @@ actual fun AudioRenderer(
         val audioElement = document.createElement("audio") as HTMLAudioElement
         audioElement.srcObject = getStream()
         audioElement.autoplay = true
-        document.body?.appendChild(audioElement)
+        document.body.appendChild(audioElement)
 
         println("WasmJs Audio track enabled")
 
         onDispose {
-            document.body?.removeChild(audioElement)
+            document.body.removeChild(audioElement)
             println("WasmJs Audio track disabled")
         }
     }

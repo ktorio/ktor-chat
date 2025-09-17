@@ -17,6 +17,13 @@ dependencyResolutionManagement {
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
     }
+
+    versionCatalogs {
+        create("kotlinWrappers") {
+            val wrappersVersion = "2025.7.10"
+            from("org.jetbrains.kotlin-wrappers:kotlin-wrappers-catalog:$wrappersVersion")
+        }
+    }
 }
 
 plugins {

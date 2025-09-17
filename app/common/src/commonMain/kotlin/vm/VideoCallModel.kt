@@ -8,9 +8,11 @@ import io.ktor.chat.client.CallSessionManager
 import io.ktor.chat.client.CallSessionManagerImpl
 import io.ktor.chat.client.SignalingClient
 import io.ktor.client.webrtc.WebRtcClient
+import io.ktor.utils.io.ExperimentalKtorApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalKtorApi::class)
 class VideoCallViewModel(
     rtcClient: WebRtcClient,
     val signalingClient: SignalingClient,
