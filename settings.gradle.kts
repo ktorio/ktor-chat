@@ -15,7 +15,6 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
     }
 
     versionCatalogs {
@@ -35,6 +34,7 @@ include(":app:common")
 include(":app:android")
 include(":app:desktop")
 include(":app:wasmJs")
+include(":app:ios")
 include(":server")
 include(":server:common")
 include(":server:rest")

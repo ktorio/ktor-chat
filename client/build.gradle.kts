@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -25,6 +24,10 @@ kotlin {
             }
         }
     }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain {
@@ -65,6 +68,12 @@ kotlin {
                 implementation(libs.ktor.server.sse)
                 implementation(libs.ktor.server.config.yaml)
                 implementation(libs.ktor.server.content.negotiation)
+            }
+        }
+
+        iosMain {
+            dependencies {
+                api(libs.ktor.client.cio)
             }
         }
 

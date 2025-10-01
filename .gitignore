@@ -1,6 +1,6 @@
 .gradle
 build/
-.kotlin/metadata/kotlinTransformedMetadataLibraries/
+.kotlin/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -40,3 +40,17 @@ out/
 h2
 state.json
 local.properties
+
+# KMP for iOS
+
+captures
+xcuserdata
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+Pods/

@@ -11,7 +11,6 @@ import io.ktor.client.webrtc.media.*
 import org.webrtc.EglBase
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
-import org.webrtc.VideoTrack
 
 object EglBaseProvider {
     var eglBase: EglBase? = null
@@ -31,7 +30,7 @@ actual fun VideoRenderer(
 ) {
     // Get the native android video track from WebRtcMedia.VideoTrack
     val nativeVideoTrack by remember(videoTrack) {
-        mutableStateOf(videoTrack.getNative() as VideoTrack)
+        mutableStateOf(videoTrack.getNative())
     }
     var renderer by remember { mutableStateOf<SurfaceViewRenderer?>(null) }
 
@@ -53,7 +52,7 @@ actual fun VideoRenderer(
                     r.release()
                 }
 
-                else -> null  // ignore other events
+                else -> {}  // ignore other events
             }
         }
     }

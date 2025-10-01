@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -20,11 +22,40 @@ kotlin {
         }
     }
 
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0"
+        summary = "Ktor Chat"
+        homepage = "https://github.com/ktorio/ktor-chat/"
+        ios.deploymentTarget = "16.0"
+
+        pod("WebRTC-SDK") {
+            version = "137.7151.01"
+            moduleName = "WebRTC"
+            packageName = "WebRTC"
+        }
+
+        podfile = project.file("../../ios/Podfile")
+
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         binaries.executable()
     }
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain {
@@ -34,6 +65,7 @@ kotlin {
                 api(compose.material3)
                 api(compose.materialIconsExtended)
                 api(libs.androidx.lifecycle.viewmodel)
+                api(libs.androidx.lifecycle.viewmodel.compose)
             }
         }
 
@@ -42,7 +74,6 @@ kotlin {
                 api(compose.preview)
                 api(compose.uiTooling)
                 api(libs.androidx.activity.compose)
-                api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.savedstate)
                 api(libs.getstream.webrtc)
             }
@@ -51,7 +82,6 @@ kotlin {
         jvmMain {
             dependencies {
                 api(compose.desktop.currentOs)
-                api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.savedstate)
                 api(libs.androidx.lifecycle.viewmodel.compose.desktop)
             }
@@ -60,7 +90,6 @@ kotlin {
         wasmJsMain {
             dependencies {
                 api(kotlinWrappers.browser)
-                api(libs.androidx.lifecycle.viewmodel.compose)
                 api(libs.androidx.lifecycle.viewmodel.compose.wasm)
             }
         }
@@ -143,5 +172,6 @@ buildkonfig {
         createConfig(target = "android")
         createConfig(target = "jvm", prefix = "desktop")
         createConfig(target = "wasmJs", prefix = "web")
+        createConfig(target = "ios")
     }
 }

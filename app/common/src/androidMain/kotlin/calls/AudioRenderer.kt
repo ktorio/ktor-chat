@@ -14,21 +14,16 @@ import io.ktor.client.webrtc.media.getNative
 actual fun AudioRenderer(
     audioTrack: WebRtcMedia.AudioTrack
 ) {
-    // Get the native android audio track from WebRtcMedia.AudioTrack
-    val nativeAudioTrack by remember(audioTrack) {
-        mutableStateOf(audioTrack.getNative())
-    }
-
     // Set the audio track to enable to play it
-    DisposableEffect(nativeAudioTrack) {
-        nativeAudioTrack.setEnabled(true)
-        println("Audio track enabled: ${nativeAudioTrack.id()}")
+    DisposableEffect(audioTrack) {
+        audioTrack.enable(true)
+        println("Audio track enabled: ${audioTrack.id}")
         
         onDispose {
-            if (nativeAudioTrack.isDisposed) {
+            if (audioTrack.getNative().isDisposed) {
                 return@onDispose
             }
-            nativeAudioTrack.setEnabled(false)
+            audioTrack.enable(false)
         }
     }
 }
