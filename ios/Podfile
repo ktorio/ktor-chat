@@ -1,8 +1,0 @@
-platform :ios, '16.0'
-
-target 'KtorChat' do
-  use_frameworks!
-
-  pod 'common', :path => '../app/common'
-  pod 'WebRTC-SDK', '137.7151.01'
-end

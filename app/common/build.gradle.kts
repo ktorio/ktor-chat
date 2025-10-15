@@ -33,12 +33,12 @@ kotlin {
         ios.deploymentTarget = "16.0"
 
         pod("WebRTC-SDK") {
-            version = "137.7151.01"
+            version = "137.7151.04"
             moduleName = "WebRTC"
             packageName = "WebRTC"
         }
 
-        podfile = project.file("../../ios/Podfile")
+        podfile = project.file("../../iosApp/Podfile")
 
         framework {
             baseName = "ComposeApp"

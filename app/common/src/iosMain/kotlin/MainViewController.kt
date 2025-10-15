@@ -1,7 +1,9 @@
-package io.ktor.chat.io.ktor.chat
+// MainViewController is located here to generate only one iOS framework
+// Generating another iOS framework for one file makes little sense
+
+package io.ktor.chat
 
 import androidx.compose.ui.window.ComposeUIViewController
-import io.ktor.chat.*
 import io.ktor.chat.app.*
 import io.ktor.chat.client.*
 import io.ktor.chat.vm.*
