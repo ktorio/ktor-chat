@@ -17,14 +17,10 @@ import web.mediastreams.MediaStream
 actual fun AudioRenderer(
     audioTrack: WebRtcMedia.AudioTrack
 ) {
-    fun getStream(): MediaStream {
-        return MediaStream().apply { addTrack(audioTrack.getNative()) }
-    }
-
     // Create an audio element and play the audio track
     DisposableEffect(audioTrack) {
         val audioElement = document.createElement("audio") as HTMLAudioElement
-        audioElement.srcObject = getStream()
+        audioElement.srcObject = MediaStream().apply { addTrack(audioTrack.getNative()) }
         audioElement.autoplay = true
         document.body.appendChild(audioElement)
 
