@@ -7,9 +7,7 @@ fun Application.repositories() {
     val log = environment.log
 
     dependencies {
-        provide<Repository<FullUser, Long>> {
-            UserRepository(resolve())
-        }
+        provide<Repository<FullUser, Long>>(UserRepository::class)
         provide<Repository<Room, Long>>(RoomRepository::class)
         provide<ObservableRepository<Membership, Long>> {
             MemberRepository(resolve()).observable(onFailure = { e ->

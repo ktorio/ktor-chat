@@ -5,6 +5,7 @@ pluginManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
     }
 }
@@ -15,7 +16,7 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
+//        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
     }
 
     versionCatalogs {

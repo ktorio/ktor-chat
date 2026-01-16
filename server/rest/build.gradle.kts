@@ -4,11 +4,21 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
+ktor {
+    openApi {
+        enabled = true
+        debug = true
+        codeInferenceEnabled = true
+        onlyCommented = false
+    }
+}
+
 dependencies {
     implementation(project(":server:common"))
     implementation(libs.ktor.server.status.pages)
     implementation(libs.ktor.server.websockets)
     implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.swagger)
     implementation(libs.postgresql)
 
     testImplementation(libs.ktor.server.test.host)

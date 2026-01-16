@@ -18,12 +18,9 @@ class MessagesTest {
     @Test
     fun `CRUD endpoints happy path`() = testApplication {
         application {
-            dependencies {
-                provide(::messagesRepository)
-            }
             rest()
             mockAuth()
-            messages()
+            messages(messagesRepository())
         }
 
         val newMessage = Message(
