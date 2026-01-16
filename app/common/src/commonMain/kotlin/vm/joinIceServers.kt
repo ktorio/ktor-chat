@@ -10,7 +10,7 @@ fun joinIceServers(
     if (stunUrl != null) {
         configuredIceServers.add(
             WebRtc.IceServer(
-                urls = stunUrl,
+                urls = listOf(stunUrl),
                 username = stunUsername,
                 credential = stunCredential
             )
@@ -19,7 +19,7 @@ fun joinIceServers(
     if (turnUrl != null) {
         configuredIceServers.add(
             WebRtc.IceServer(
-                urls = turnUrl,
+                urls = listOf(turnUrl),
                 username = turnUsername,
                 credential = turnCredential
             )

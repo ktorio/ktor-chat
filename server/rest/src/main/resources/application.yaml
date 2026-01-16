@@ -15,6 +15,7 @@ ktor:
             - io.ktor.chat.RoomsKt.rooms
             - io.ktor.chat.MembershipsKt.members
             - io.ktor.chat.SignalingKt.signaling
+            - io.ktor.chat.DocsKt.docs
     deployment:
         port: 8080
 

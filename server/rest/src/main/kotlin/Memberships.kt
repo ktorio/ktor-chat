@@ -13,6 +13,9 @@ fun Application.members() {
     routing {
         authenticate {
             route("/memberships") {
+                /**
+                 * Get the list of rooms you're in
+                 */
                 get {
                     val userId = call.principal<ChatPrincipal>()?.user?.id
                         ?: throw BadRequestException("You must log in to get a list of joined rooms")

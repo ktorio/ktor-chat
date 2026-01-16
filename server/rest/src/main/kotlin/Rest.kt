@@ -11,9 +11,12 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.describe
 import io.ktor.server.sse.*
 import io.ktor.server.websocket.WebSockets
 import io.ktor.util.*
+import io.ktor.utils.io.ExperimentalKtorApi
+import kotlinx.serialization.json.Json
 
 fun Application.rest() {
     install(CORS) {
@@ -36,7 +39,12 @@ fun Application.rest() {
         anyHost()
     }
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            encodeDefaults = false
+            ignoreUnknownKeys = true
+            isLenient = true
+            prettyPrint = true
+        })
     }
     install(StatusPages) {
         exception<ConflictingArgumentException> { call, ex ->
@@ -62,27 +70,35 @@ fun Application.rest() {
     }
 }
 
+@OptIn(ExperimentalKtorApi::class)
 inline fun <reified E : Identifiable<Long>> Route.restGet(
     repository: Repository<E, Long>
 ) {
     get {
         val query = MapQuery.of(call.queryParameters.toMap())
         call.respond(repository.list(query))
+    }.describe {
+        summary = "Get list of ${E::class.simpleName?.lowercase()}s"
     }
 }
 
+@OptIn(ExperimentalKtorApi::class)
 inline fun <reified E : Identifiable<Long>> Route.restMutations(
     repository: Repository<E, Long>
 ) {
     post {
         val newEntity = repository.create(call.receive())
         call.respond(newEntity)
+    }.describe {
+        summary = "Create a ${E::class.simpleName?.lowercase()}"
     }
     put("{id}") {
         val entity = call.receive<E>()
         repository.update(entity)
 
         call.respond(HttpStatusCode.NoContent)
+    }.describe {
+        summary = "Update a ${E::class.simpleName?.lowercase()}"
     }
     delete("{id}") {
         val id = call.parameters["id"]?.toLongOrNull()
@@ -90,5 +106,7 @@ inline fun <reified E : Identifiable<Long>> Route.restMutations(
         repository.delete(id)
 
         call.respond(HttpStatusCode.NoContent)
+    }.describe {
+        summary = "Delete a ${E::class.simpleName?.lowercase()}"
     }
 }
