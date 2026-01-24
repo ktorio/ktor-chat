@@ -12,7 +12,7 @@ The features presented in the application include:
 
 ## Project Structure
 
-The project consists of the following amper modules:
+The project consists of the following modules:
 
 | module                           | description                                                  |
 |----------------------------------|--------------------------------------------------------------|
@@ -23,6 +23,7 @@ The project consists of the following amper modules:
 | [app / common](app/common)       | shared front-end application code                            |
 | [app / android](app/android)     | android front-end application                                |
 | [app / desktop](app/desktop)     | jvm desktop front-end application                            |
+| [app / wasmJs](app/wasmJs)     | wasm-js web front-end application                            |
 | [db](db)                         | exposed database schema types and repository implementations |
 | [client](client)                 | common client library for interacting with the back-end      |
 
@@ -33,10 +34,10 @@ mindmap
   root((core))
     id(app)
       desktop
+      wasmJs
       android
     id(server)
       rest
-      htmx
       admin
     id{{client}}
     id{{db}}
@@ -52,24 +53,25 @@ with a mock environment, or with a server running.
 
 ### Running on Android
 
-To run the android client you should specify the valid server url in the [ChatViewModelProvider.kt](app/common/src@android/ktor/chat/vm/ChatViewModelProvider.kt).
+To run the android client you should specify the valid server url in the [ChatViewModelProvider.kt](app/common/src/androidMain/kotlin/vm/ChatViewModelProvider.kt).
 Remember: The emulator has its own `localhost`. You can check your local ip using `ifconfig | grep "inet "`.
 
 Here is a list of the commands for running each program:
 
 | application | main source                       | gradle command                  |
 |-------------|-----------------------------------|---------------------------------|
-| server-rest | `server/rest/src/Application.kt`  | `./gradlew :server:rest:run`    |
-| desktop app | `app/desktop/src/main.kt`         | `./gradlew :app:desktop:jvmRun` |
-| android app | `app/android/src/MainActivity.kt` |                                 |
+| server-rest | `server/rest/src/main/kotlin/Rest.kt`  | `./gradlew :server:rest:run`    |
+| desktop app | `app/desktop/src/main/kotlin/main.kt`         | `./gradlew :app:desktop:jvmRun` |
+| android app | `app/android/src/androidMain/kotlin/MainActivity.kt` |                                 |
+| wasmJs app | `app/wasmJs/src/wasmJsMain/kotlin/io.ktor.chat/main.kt` | `./gradlew :app:wasmJs:wasmJsBrowserRun` |
 
 ### With Docker
 
 If you'd like to run everything in a containerized environment:
 
 First, publish images locally using:
- - `./gradlew :server:rest:publishImageToLocalRegistry`
- - `./gradlew :server:admin:publishImageToLocalRegistry`
+- `./gradlew :server:rest:publishImageToLocalRegistry`
+- `./gradlew :server:admin:publishImageToLocalRegistry`
 
 Now, you can run docker compose:
 ```bash
@@ -78,5 +80,5 @@ docker compose up
 
 ## Screenshots
 
-![](docs/chat-desktop.png)
-![](docs/chat-phone.png)
+![Chat desktop application](docs/chat-desktop.png)
+![Chat phone application](docs/chat-phone.png)
