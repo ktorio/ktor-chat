@@ -30,7 +30,7 @@ class VideoCallViewModel(
         signalingClient.sendCommand(Reconnect())
     }
 
-    override suspend fun initiateCall(roomId: Long) {
+    override suspend fun initiateCall(roomId: ULong) {
         callSessionManager.initiateCall(roomId)
         isInVideoCall.value = true
     }

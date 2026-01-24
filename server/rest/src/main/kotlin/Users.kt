@@ -7,7 +7,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.users() {
-    val users: Repository<FullUser, Long> by dependencies
+    val users: Repository<FullUser, ULong> by dependencies
 
     routing {
         authenticate {

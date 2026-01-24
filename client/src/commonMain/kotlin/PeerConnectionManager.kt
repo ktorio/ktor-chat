@@ -29,7 +29,7 @@ class PeerConnectionManager(
     /** Whether this peer initiated the call (affects offer/answer flow) */
     private val isInitiator: Boolean,
     /** Room ID where this call is taking place */
-    private val roomId: Long,
+    private val roomId: ULong,
     /** The remote user we're connecting with */
     private val interlocutor: User,
     /** The current local user */

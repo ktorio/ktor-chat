@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import io.ktor.chat.client.listInRoom
 import io.ktor.chat.client.remoteList
 import io.ktor.chat.client.remoteListWithUpdates
@@ -36,6 +35,7 @@ import io.ktor.chat.utils.Remote
 import io.ktor.chat.vm.ChatViewModel
 import io.ktor.chat.vm.VideoCallViewModel
 import io.ktor.chat.vm.createViewModel
+import kotlin.time.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +60,7 @@ fun ChatScreen(vm: ChatViewModel = createViewModel(), videoCallVM: VideoCallView
         }
     }
 
-    fun exisingRoomWithId(id: Long): Membership? = when (roomsRemote) {
+    fun exisingRoomWithId(id: ULong): Membership? = when (roomsRemote) {
         is Done -> (roomsRemote as Done<SnapshotStateList<Membership>>).value.firstOrNull { it.room.id == id }
         else -> null
     }

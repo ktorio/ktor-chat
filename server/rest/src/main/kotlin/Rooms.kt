@@ -6,7 +6,7 @@ import io.ktor.server.plugins.di.*
 import io.ktor.server.routing.*
 
 fun Application.rooms() {
-    val rooms: Repository<Room, Long> by dependencies
+    val rooms: Repository<Room, ULong> by dependencies
 
     routing {
         authenticate {

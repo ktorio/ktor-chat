@@ -32,7 +32,6 @@ kotlin {
                 api(project(":core"))
                 api(libs.kotlinx.serialization.json)
                 api(libs.kotlinx.coroutines)
-                api(libs.kotlinx.datetime)
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.webrtc)
                 api(libs.ktor.client.websockets)

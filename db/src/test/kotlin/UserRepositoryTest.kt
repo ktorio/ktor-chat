@@ -1,9 +1,12 @@
 package io.ktor.chat
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
+import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
+import org.jetbrains.exposed.v1.r2dbc.SchemaUtils
+import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import kotlin.test.*
 
 class UserRepositoryTest {
@@ -13,14 +16,14 @@ class UserRepositoryTest {
     private val sampleUser: FullUser = FullUser("Bob Loblaw", "bob@law.blog", "pwd123")
 
     @BeforeTest
-    fun setUp() {
-        val database = Database.connect(
-            url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+    fun setUp() = runBlocking {
+        val database = R2dbcDatabase.connect(
+            url = "r2dbc:h2:mem:test;DB_CLOSE_DELAY=-1",
             user = "root",
             driver = "org.h2.Driver",
             password = ""
         ).also { db ->
-            transaction(db) {
+            suspendTransaction(db) {
                 SchemaUtils.create(Users, Rooms, Messages)
             }
         }

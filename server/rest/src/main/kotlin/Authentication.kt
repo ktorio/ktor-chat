@@ -27,7 +27,7 @@ const val CONFIRMATION_MAIL_TEMPLATE = """
 """
 
 fun Application.auth() {
-    val users: Repository<FullUser, Long> by dependencies
+    val users: Repository<FullUser, ULong> by dependencies
     val hashAlgorithm: Algorithm by dependencies.named("hash")
     val mailer: Mailer by dependencies
     val audience: String = property("jwt.audience")
@@ -56,7 +56,7 @@ fun Application.auth() {
             }
             validate { credential ->
                 ChatPrincipal(
-                    credential["id"]?.toLongOrNull() ?: return@validate null,
+                    credential["id"]?.toULongOrNull() ?: return@validate null,
                     credential["name"] ?: return@validate null
                 )
             }
@@ -150,5 +150,5 @@ fun Application.auth() {
 
 @Serializable
 data class ChatPrincipal(val user: User) {
-    constructor(id: Long, name: String) : this(SimplifiedUser(id, name))
+    constructor(id: ULong, name: String) : this(SimplifiedUser(id, name))
 }

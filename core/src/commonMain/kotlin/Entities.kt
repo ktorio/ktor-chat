@@ -1,22 +1,22 @@
 package io.ktor.chat
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlin.time.Instant
 
 interface Identifiable<ID> {
     val id: ID
 }
 
 @Serializable(SimplifiedUserSerializer::class)
-sealed interface User: Identifiable<Long> {
+sealed interface User: Identifiable<ULong> {
     val name: String
 }
 
-fun User(id: Long, name: String) =
+fun User(id: ULong, name: String) =
     SimplifiedUser(id, name)
 
 @Serializable
@@ -24,38 +24,38 @@ data class FullUser(
     override val name: String,
     val email: String,
     val password: String,
-    override val id: Long = 0,
+    override val id: ULong = 0u,
 ): User
 
 
 @Serializable
 data class SimplifiedUser(
-    override val id: Long,
+    override val id: ULong,
     override val name: String
 ): User
 
 @Serializable
 data class Room(
     val name: String,
-    override val id: Long = 0,
-): Identifiable<Long>
+    override val id: ULong = 0u,
+): Identifiable<ULong>
 
 @Serializable
 data class Message(
     val author: User,
-    val room: Long,
+    val room: ULong,
     val created: Instant,
     val text: String,
-    override val id: Long = 0,
+    override val id: ULong = 0u,
     val modified: Instant? = null,
-): Identifiable<Long>
+): Identifiable<ULong>
 
 @Serializable
 data class Membership(
     val room: Room,
     val user: User,
-    override val id: Long = 0
-): Identifiable<Long>
+    override val id: ULong = 0u
+): Identifiable<ULong>
 
 
 class SimplifiedUserSerializer : KSerializer<User> {

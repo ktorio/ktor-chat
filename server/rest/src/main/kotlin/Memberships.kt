@@ -8,7 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.members() {
-    val memberships: ObservableRepository<Membership, Long> by dependencies
+    val memberships: ObservableRepository<Membership, ULong> by dependencies
 
     routing {
         authenticate {

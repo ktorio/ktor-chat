@@ -9,16 +9,16 @@ build-konfig = "0.17.1"
 composeHotReload = "1.0.0-beta07"
 composeMultiplatform = "1.9.0"
 kotlin = "2.3.0"
-ktor = "3.4.0-eap-+"
+ktor = "3.4.0"
 ktor-plugin = "3.4.0-SNAPSHOT"
 logback = "1.5.18"
-exposed = "0.61.0"
+exposed = "1.0.0"
 h2 = "2.3.232"
 android-lifecycle = "2.9.3"
-postgresql-jdbc = "42.7.7"
+postgresql-jdbc = "1.1.1.RELEASE"
 kotlinx-serialization = "1.9.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.6.2"
+#kotlinx-datetime = "0.6.2"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -43,16 +43,19 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+#kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 exposed = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+#exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-r2dbc = { module = "org.jetbrains.exposed:exposed-r2dbc", version.ref = "exposed" }
 exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-jdbc" }
+h2-r2dbc = { module = "io.r2dbc:r2dbc-h2", version = "1.0.0.RELEASE" }
+postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "postgresql-jdbc" }
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "android-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-lifecycle" }
 androidx-lifecycle-viewmodel-compose-desktop = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop", version.ref = "android-lifecycle" }
