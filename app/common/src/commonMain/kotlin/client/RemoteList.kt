@@ -39,7 +39,7 @@ inline fun <reified E : Identifiable<ID>, ID> ObservableRepository<E, ID>.remote
 }
 
 @Composable
-fun ObservableRepository<Message, Long>.listInRoom(room: Room?): State<Remote<SnapshotStateList<Message>>> =
+fun ObservableRepository<Message, ULong>.listInRoom(room: Room?): State<Remote<SnapshotStateList<Message>>> =
     remoteListWithUpdates(
         room?.let {
             MapQuery {

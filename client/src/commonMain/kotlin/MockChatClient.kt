@@ -1,13 +1,12 @@
 package io.ktor.chat.client
 
 import io.ktor.chat.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.minus
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 
 class MockChatClient(
     rootUser: FullUser = FullUser("Steve", "steve@mail.com", "kek"),
-    lobby: Room = Room("lobby", id = 1)
+    lobby: Room = Room("lobby", id = 1u)
 ) : ChatClient {
     override suspend fun verify(): Boolean = true
 
@@ -50,11 +49,11 @@ class MockChatClient(
             author = rootUser,
             room = lobby.id,
             created = Clock.System.now()
-                .minus(42, DateTimeUnit.SECOND),
+                .minus(42.seconds),
             text = "Hello, World!"
         ),
         copy = { m, id -> m.copy(id = id) }
     ).observable()
-    override val memberships: ObservableRepository<Membership, Long> =
+    override val memberships: ObservableRepository<Membership, ULong> =
         ListRepository<Membership>(copy = { m, id -> m.copy(id = id) }).observable()
 }

@@ -7,14 +7,14 @@ fun Application.repositories() {
     val log = environment.log
 
     dependencies {
-        provide<Repository<FullUser, Long>>(UserRepository::class)
-        provide<Repository<Room, Long>>(RoomRepository::class)
-        provide<ObservableRepository<Membership, Long>> {
+        provide<Repository<FullUser, ULong>>(UserRepository::class)
+        provide<Repository<Room, ULong>>(RoomRepository::class)
+        provide<ObservableRepository<Membership, ULong>> {
             MemberRepository(resolve()).observable(onFailure = { e ->
                 log.error("Failed to subscribe to event", e)
             })
         }
-        provide<ObservableRepository<Message, Long>> {
+        provide<ObservableRepository<Message, ULong>> {
             MessageRepository(resolve()).observable(onFailure = { e ->
                 log.error("Failed to subscribe to event", e)
             })

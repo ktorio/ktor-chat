@@ -1,11 +1,10 @@
 package io.ktor.chat
 
-import org.jetbrains.exposed.sql.ColumnSet
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.statements.UpdateBuilder
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.statements.UpdateBuilder
+import org.jetbrains.exposed.v1.r2dbc.*
 
-class MessageRepository(database: Database): ExposedRepository<Message, Long, Messages>(database, Messages) {
+class MessageRepository(database: R2dbcDatabase): ExposedRepository<Message, ULong, Messages>(database, Messages) {
 
     override val tableWithJoins: ColumnSet
         get() = Messages.innerJoin(Users)
@@ -23,7 +22,7 @@ class MessageRepository(database: Database): ExposedRepository<Message, Long, Me
             modified = row[Messages.modified],
         )
 
-    override fun Message.withId(id: Long): Message =
+    override fun Message.withId(id: ULong): Message =
         copy(id = id)
 
     override fun assignColumns(e: Message): Messages.(UpdateBuilder<*>) -> Unit = {

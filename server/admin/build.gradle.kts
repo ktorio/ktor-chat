@@ -19,12 +19,11 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.di)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.logback.classic)
     implementation(libs.h2)
     implementation(libs.exposed)
-    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.r2dbc)
     implementation(libs.postgresql)
 
     testImplementation(libs.ktor.server.test.host)

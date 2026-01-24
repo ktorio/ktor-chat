@@ -53,17 +53,17 @@ class MapQuery private constructor(private val map: Map<String, List<Any>>) : Qu
 data object Everything : Query
 data object Nothing : Query
 
-inline fun <reified E : Identifiable<Long>> ListRepository(
+inline fun <reified E : Identifiable<ULong>> ListRepository(
     vararg items: E,
-    noinline copy: (E, Long) -> E
-): ListRepository<E, Long> {
+    noinline copy: (E, ULong) -> E
+): ListRepository<E, ULong> {
     val eType = E::class
 
     return ListRepository(
-        list = items.mapIndexed { index, e -> copy(e, index.toLong() + 1L) }.toMutableList(),
+        list = items.mapIndexed { index, e -> copy(e, index.toULong() + 1u) }.toMutableList(),
         eType = eType,
-        currentId = items.size.toLong(),
-        nextId = { it + 1L },
+        currentId = items.size.toULong(),
+        nextId = { it + 1u },
         setId = copy
     )
 }

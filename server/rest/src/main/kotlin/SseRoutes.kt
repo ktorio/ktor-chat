@@ -7,7 +7,7 @@ import io.ktor.sse.*
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.serialization.json.Json
 
-inline fun <reified E: Identifiable<Long>> Route.sseChanges(observableRepository: ObservableRepository<E, Long>) {
+inline fun <reified E: Identifiable<ULong>> Route.sseChanges(observableRepository: ObservableRepository<E, ULong>) {
     sse("changes") {
         environment.log.info("SSE subscribe ${call.request.path()}")
         val observer = observableRepository.onChange { type, e ->

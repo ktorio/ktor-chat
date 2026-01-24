@@ -21,7 +21,7 @@ class CallSessionManagerImpl(
     private val rtcClient: WebRtcClient,
 ) : CallSessionManager {
     /** Current active room ID for the call session */
-    private var roomId: Long? = null
+    private var roomId: ULong? = null
 
     /** Current user information */
     override var user: User? = null
@@ -54,7 +54,7 @@ class CallSessionManagerImpl(
     override val localAudioTrack = localAudioTrackFlow.asStateFlow()
 
     /** Maps user ID to peer connection manager for active connections */
-    private val peerManagers = mutableMapOf<Long, PeerConnectionManager>()
+    private val peerManagers = mutableMapOf<ULong, PeerConnectionManager>()
 
     /** Set of pending join requests that haven't been accepted or rejected */
     private val pendingJoins = mutableSetOf<JoinCall>()
@@ -207,7 +207,7 @@ class CallSessionManagerImpl(
      * Initiates a new video call in the specified room.
      * Sets up local media and notifies others in the room.
      */
-    override suspend fun initiateCall(roomId: Long) {
+    override suspend fun initiateCall(roomId: ULong) {
         if (roomId == this.roomId) {
             return
         }

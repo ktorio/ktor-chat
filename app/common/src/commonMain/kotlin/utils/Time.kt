@@ -1,29 +1,42 @@
 package io.ktor.chat.utils
 
-import kotlinx.datetime.*
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 fun Instant.shortened(
-    now: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    now: Instant = Clock.System.now(),
     hideDate: Boolean = true,
 ): String {
-    val time = toLocalDateTime(TimeZone.currentSystemDefault())
-    return when ((now.date - time.date).days) {
-        0 -> time.hourMinuteSecond()
-        1 -> "yesterday at ${time.hourMinuteSecond()}"
-        else -> buildString {
-            if (!hideDate)
-                append("${time.dayOfMonth} ${time.month.name.titleCase()}, ")
-            append(time.hourMinuteSecond())
+    val delta: Duration = now - this
+
+    // No time zones => we can't compute a wall-clock "HH:mm:ss" or real "yesterday".
+    // We switch to a purely duration-based, human-readable relative format.
+    return buildString {
+        append(delta.humanizeRelative())
+
+        // Keep the parameter for source compatibility; optionally provide a hint when asked.
+        if (!hideDate) {
+            append(" (epoch +")
+            append(this@shortened.epochSeconds)
+            append("s)")
         }
     }
 }
 
+private fun Duration.humanizeRelative(): String {
+    val future = this.isNegative()
+    val d = this.absoluteValue
 
-fun LocalDateTime.dateString() =
-    "$dayOfMonth ${month.name.titleCase()}"
+    val text = when {
+        d < 45.seconds -> "just now"
+        d < 60.minutes -> "${d.inWholeMinutes}m"
+        d < 24.hours -> "${d.inWholeHours}h"
+        else -> "${d.inWholeDays}d"
+    }
 
-fun Instant.dateString() =
-    toLocalDateTime(TimeZone.currentSystemDefault()).dateString()
-
-fun LocalDateTime.hourMinuteSecond() =
-    hour.toString() + ':' + minute.toString().padStart(2, '0') + ':' + second.toString().padStart(2, '0')
+    return if (future) "in $text" else "$text ago"
+}

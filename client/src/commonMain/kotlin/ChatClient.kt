@@ -25,10 +25,10 @@ interface ServerStatusClient {
 }
 
 interface ChatRestClient {
-    val rooms: Repository<Room, Long>
-    val messages: ObservableRepository<Message, Long>
-    val users: ReadOnlyRepository<User, Long>
-    val memberships: ObservableRepository<Membership, Long>
+    val rooms: Repository<Room, ULong>
+    val messages: ObservableRepository<Message, ULong>
+    val users: ReadOnlyRepository<User, ULong>
+    val memberships: ObservableRepository<Membership, ULong>
 }
 
 interface SignalingClient {
@@ -53,7 +53,7 @@ interface CallSessionManager {
     fun setupRoomCall(scope: CoroutineScope)
     suspend fun listenCommandsFlow()
 
-    suspend fun initiateCall(roomId: Long)
+    suspend fun initiateCall(roomId: ULong)
 
     suspend fun acceptCall(request: JoinCall)
 

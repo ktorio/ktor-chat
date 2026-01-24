@@ -108,10 +108,10 @@ class HttpChatClient(
             false
         }
 
-    override val rooms: Repository<Room, Long> get() = restRepository({ http }, "rooms")
-    override val messages: ObservableRepository<Message, Long> get() = observableRepository({ http }, "messages")
-    override val users: ReadOnlyRepository<SimplifiedUser, Long> get() = restRepository({ http }, "users")
-    override val memberships: ObservableRepository<Membership, Long>
+    override val rooms: Repository<Room, ULong> get() = restRepository({ http }, "rooms")
+    override val messages: ObservableRepository<Message, ULong> get() = observableRepository({ http }, "messages")
+    override val users: ReadOnlyRepository<SimplifiedUser, ULong> get() = restRepository({ http }, "users")
+    override val memberships: ObservableRepository<Membership, ULong>
         get() = observableRepository(
             { http },
             "memberships"

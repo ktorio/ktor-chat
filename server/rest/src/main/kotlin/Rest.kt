@@ -71,8 +71,8 @@ fun Application.rest() {
 }
 
 @OptIn(ExperimentalKtorApi::class)
-inline fun <reified E : Identifiable<Long>> Route.restGet(
-    repository: Repository<E, Long>
+inline fun <reified E : Identifiable<ULong>> Route.restGet(
+    repository: Repository<E, ULong>
 ) {
     get {
         val query = MapQuery.of(call.queryParameters.toMap())
@@ -83,8 +83,8 @@ inline fun <reified E : Identifiable<Long>> Route.restGet(
 }
 
 @OptIn(ExperimentalKtorApi::class)
-inline fun <reified E : Identifiable<Long>> Route.restMutations(
-    repository: Repository<E, Long>
+inline fun <reified E : Identifiable<ULong>> Route.restMutations(
+    repository: Repository<E, ULong>
 ) {
     post {
         val newEntity = repository.create(call.receive())
@@ -101,7 +101,7 @@ inline fun <reified E : Identifiable<Long>> Route.restMutations(
         summary = "Update a ${E::class.simpleName?.lowercase()}"
     }
     delete("{id}") {
-        val id = call.parameters["id"]?.toLongOrNull()
+        val id = call.parameters["id"]?.toULongOrNull()
             ?: throw NotFoundException()
         repository.delete(id)
 

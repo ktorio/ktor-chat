@@ -19,7 +19,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.datetime)
+//                implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.coroutines)
                 implementation(libs.kotlin.reflect)
             }

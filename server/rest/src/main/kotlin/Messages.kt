@@ -5,7 +5,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.routing.*
 
-fun Application.messages(messages: ObservableRepository<Message, Long>) {
+fun Application.messages(messages: ObservableRepository<Message, ULong>) {
     routing {
         authenticate {
             route("/messages") {

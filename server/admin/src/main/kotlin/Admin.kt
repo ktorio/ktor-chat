@@ -6,7 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 fun Application.admin() {
-    val users: Repository<FullUser, Long> by dependencies
+    val users: Repository<FullUser, ULong> by dependencies
 
     routing {
         authenticate {

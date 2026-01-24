@@ -13,7 +13,7 @@ import kotlinx.serialization.modules.polymorphic
 sealed interface SignalingCommand
 
 sealed interface RoomCommand : SignalingCommand {
-    val roomId: Long
+    val roomId: ULong
 }
 
 /**
@@ -22,7 +22,7 @@ sealed interface RoomCommand : SignalingCommand {
  */
 sealed interface DirectedCommand : RoomCommand {
     val sender: User
-    val recipientId: Long
+    val recipientId: ULong
 }
 
 /**
@@ -33,7 +33,7 @@ sealed interface DirectedCommand : RoomCommand {
  * Purpose: Informs the UI that the user is joining a room with an active call.
  */
 @Serializable
-class OngoingCall(override val roomId: Long) : RoomCommand
+class OngoingCall(override val roomId: ULong) : RoomCommand
 
 /**
  * Request to join or initiate a video call in a room.
@@ -49,7 +49,7 @@ class OngoingCall(override val roomId: Long) : RoomCommand
  * This is the first step in establishing a WebRTC connection.
  */
 @Serializable
-class JoinCall(override val roomId: Long, val sender: User) : RoomCommand
+class JoinCall(override val roomId: ULong, val sender: User) : RoomCommand
 
 /**
  * Contains the SDP (Session Description Protocol) offer for establishing a WebRTC connection.
@@ -64,9 +64,9 @@ class JoinCall(override val roomId: Long, val sender: User) : RoomCommand
  */
 @Serializable
 class PickUpCall(
-    override val roomId: Long,
+    override val roomId: ULong,
     override val sender: User,
-    override val recipientId: Long,
+    override val recipientId: ULong,
     val sdpOffer: String
 ) : DirectedCommand
 
@@ -83,9 +83,9 @@ class PickUpCall(
  */
 @Serializable
 class SdpAnswer(
-    override val roomId: Long,
+    override val roomId: ULong,
     override val sender: User,
-    override val recipientId: Long,
+    override val recipientId: ULong,
     val sdpAnswer: String
 ) : DirectedCommand
 
@@ -106,9 +106,9 @@ class SdpAnswer(
  */
 @Serializable
 class IceExchange(
-    override val roomId: Long,
+    override val roomId: ULong,
     override val sender: User,
-    override val recipientId: Long,
+    override val recipientId: ULong,
     val candidate: String
 ) : DirectedCommand
 
@@ -127,7 +127,7 @@ class IceExchange(
  */
 @Serializable
 class LeaveCall(
-    override val roomId: Long,
+    override val roomId: ULong,
     val sender: User
 ) : RoomCommand
 

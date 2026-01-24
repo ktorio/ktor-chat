@@ -7,9 +7,6 @@ plugins {
 ktor {
     openApi {
         enabled = true
-        debug = true
-        codeInferenceEnabled = true
-        onlyCommented = false
     }
 }
 

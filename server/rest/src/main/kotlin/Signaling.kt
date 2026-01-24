@@ -22,23 +22,23 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class SessionManager(
-    private val memberships: Repository<Membership, Long>
+    private val memberships: Repository<Membership, ULong>
 ) {
-    data class SignalingEvent(val command: SignalingCommand, val recipientId: Long)
+    data class SignalingEvent(val command: SignalingCommand, val recipientId: ULong)
 
     private val sessionManagerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val mutex = Mutex()
 
     // Set of room IDs that are in call
-    private val roomsInCall = mutableSetOf<Long>()
+    private val roomsInCall = mutableSetOf<ULong>()
 
-    private val roomClients = mutableMapOf<Long, MutableSet<Long>>()
+    private val roomClients = mutableMapOf<ULong, MutableSet<ULong>>()
 
     // Flow for signaling commands, with room ID
     private val _signalingCommands = MutableSharedFlow<SignalingEvent>(1)
     val signalingCommands: SharedFlow<SignalingEvent> = _signalingCommands.asSharedFlow()
 
-    suspend fun userRooms(userId: Long): List<Long> {
+    suspend fun userRooms(userId: ULong): List<ULong> {
         val query = MapQuery { this["user"] = userId }
         return memberships.list(query).map { it.room.id }
     }
@@ -72,7 +72,7 @@ class SessionManager(
         }
     }
 
-    private fun broadcast(senderId: Long, command: RoomCommand): Job {
+    private fun broadcast(senderId: ULong, command: RoomCommand): Job {
         val allClients = roomClients[command.roomId] ?: error("Room ${command.roomId} not found")
         return sessionManagerScope.launch {
             for (recipientId in allClients) {
@@ -82,7 +82,7 @@ class SessionManager(
         }
     }
 
-    private fun sendTo(senderId: Long, recipientId: Long, command: RoomCommand) {
+    private fun sendTo(senderId: ULong, recipientId: ULong, command: RoomCommand) {
         require(senderId != recipientId) {
             "Sender and recipient cannot be the same"
         }
@@ -134,7 +134,7 @@ class SessionManager(
 }
 
 fun Application.signaling() {
-    val memberships: Repository<Membership, Long> by dependencies
+    val memberships: Repository<Membership, ULong> by dependencies
     val manager = SessionManager(memberships)
 
     routing {

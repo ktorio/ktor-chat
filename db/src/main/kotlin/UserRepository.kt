@@ -1,10 +1,10 @@
 package io.ktor.chat
 
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.statements.UpdateBuilder
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.core.statements.UpdateBuilder
+import org.jetbrains.exposed.v1.r2dbc.*
 
-class UserRepository(database: Database): ExposedRepository<FullUser, Long, Users>(database, Users) {
+class UserRepository(database: R2dbcDatabase): ExposedRepository<FullUser, ULong, Users>(database, Users) {
     override fun rowToEntity(row: ResultRow): FullUser =
         FullUser(
             name = row[Users.name],
@@ -13,7 +13,7 @@ class UserRepository(database: Database): ExposedRepository<FullUser, Long, User
             id = row[Users.id].value,
         )
 
-    override fun FullUser.withId(id: Long): FullUser =
+    override fun FullUser.withId(id: ULong): FullUser =
         copy(id = id)
 
     override fun assignColumns(e: FullUser): Users.(UpdateBuilder<*>) -> Unit = {
