@@ -15,8 +15,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         mavenLocal()
-        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
-//        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/eap") }
+        maven { url = uri("https://redirector.kotlinlang.org/maven/ktor-eap") }
+        //maven { url = uri("https://redirector.kotlinlang.org/maven/compose-dev") }
     }
 
     versionCatalogs {
