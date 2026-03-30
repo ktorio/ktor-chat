@@ -40,3 +40,7 @@ out/
 h2
 state.json
 local.properties
+ios/Pods
+ios/KtorChat.xcodeproj
+ios/KtorChat.xcworkspace
+server/rest/docs

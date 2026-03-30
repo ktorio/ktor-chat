@@ -4,20 +4,19 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.sse.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Clock
 
 class MessagesTest {
 
     @Test
     fun `CRUD endpoints happy path`() = testApplication {
         application {
+            contentNegotiation()
             rest()
             mockAuth()
             messages(messagesRepository())
@@ -25,12 +24,12 @@ class MessagesTest {
 
         val newMessage = Message(
             author = mockUser,
-            room = 1L,
+            room = 1u,
             created = Clock.System.now(),
             text = "Hello, World!",
         )
         val expectedMessage = newMessage.copy(
-            id = 1,
+            id = 1u,
             author = SimplifiedUser(mockUser.id, mockUser.name)
         )
 

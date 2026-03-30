@@ -16,7 +16,6 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://redirector.kotlinlang.org/maven/ktor-eap") }
-        //maven { url = uri("https://redirector.kotlinlang.org/maven/compose-dev") }
     }
 
     versionCatalogs {
@@ -24,6 +23,7 @@ dependencyResolutionManagement {
             val wrappersVersion = "2025.7.10"
             from("org.jetbrains.kotlin-wrappers:kotlin-wrappers-catalog:$wrappersVersion")
         }
+        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.4.2")
     }
 }
 

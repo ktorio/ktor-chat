@@ -16,7 +16,14 @@ import io.ktor.server.sse.*
 import io.ktor.server.websocket.WebSockets
 import io.ktor.util.*
 import io.ktor.utils.io.ExperimentalKtorApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 
 fun Application.rest() {
     install(CORS) {
@@ -37,14 +44,6 @@ fun Application.rest() {
         allowHeader("Sec-WebSocket-Accept") // Important for WebSocket handshake
         allowHeaders { true }
         anyHost()
-    }
-    install(ContentNegotiation) {
-        json(Json {
-            encodeDefaults = false
-            ignoreUnknownKeys = true
-            isLenient = true
-            prettyPrint = true
-        })
     }
     install(StatusPages) {
         exception<ConflictingArgumentException> { call, ex ->
