@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.ktor)
+    alias(ktorLibs.plugins.ktor)
 }
 
 dependencies {
@@ -8,16 +8,16 @@ dependencies {
     implementation(project(":db"))
     implementation(project(":server:common"))
     implementation(project(":server:rest"))
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.cio)
-    implementation(libs.ktor.server.auth)
-    implementation(libs.ktor.server.auth.jwt)
-    implementation(libs.ktor.json)
-    implementation(libs.ktor.server.sse)
-    implementation(libs.ktor.server.call.logging)
-    implementation(libs.ktor.server.config.yaml)
-    implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.ktor.server.di)
+    implementation(ktorLibs.server.core)
+    implementation(ktorLibs.server.cio)
+    implementation(ktorLibs.server.auth)
+    implementation(ktorLibs.server.auth.jwt)
+    implementation(ktorLibs.serialization.kotlinx.json)
+    implementation(ktorLibs.server.sse)
+    implementation(ktorLibs.server.callLogging)
+    implementation(ktorLibs.server.config.yaml)
+    implementation(ktorLibs.server.contentNegotiation)
+    implementation(ktorLibs.server.di)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.logback.classic)
@@ -26,8 +26,8 @@ dependencies {
     implementation(libs.exposed.r2dbc)
     implementation(libs.postgresql)
 
-    testImplementation(libs.ktor.server.test.host)
-    testImplementation(libs.ktor.client.content.negotiation)
+    testImplementation(ktorLibs.server.testHost)
+    testImplementation(ktorLibs.client.contentNegotiation)
     testImplementation(libs.kotlin.test.junit)
 }
 

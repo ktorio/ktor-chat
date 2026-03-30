@@ -14,17 +14,16 @@ kotlin {
             jvmTarget = JvmTarget.JVM_11
         }
     }
-    
+
     sourceSets {
         commonMain {
             dependencies {
                 implementation(libs.kotlinx.serialization.json)
-//                implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.coroutines)
                 implementation(libs.kotlin.reflect)
             }
         }
-        
+
         commonTest {
             dependencies {
                 implementation(libs.kotlinx.coroutines.test)
@@ -42,7 +41,7 @@ kotlin {
 android {
     namespace = "io.ktor.chat.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    
+
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
