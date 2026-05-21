@@ -23,7 +23,7 @@ dependencyResolutionManagement {
             val wrappersVersion = "2025.7.10"
             from("org.jetbrains.kotlin-wrappers:kotlin-wrappers-catalog:$wrappersVersion")
         }
-        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.4.2")
+        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.5.0")
     }
 }
 
